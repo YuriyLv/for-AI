@@ -3,27 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>for-AI · Тестова сторінка</title>
+<title>for-AI · Навігація</title>
 <style>
-  :root { --bg:#0d1117; --card:#161b22; --fg:#e6edf3; --muted:#8b949e; --accent:#58a6ff; }
+  :root {
+    --bg:#0d1117; --bg2:#11161d; --card:#161b22; --border:#30363d;
+    --fg:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --accent2:#3fb950;
+  }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--fg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-  .card { background:var(--card); border:1px solid #30363d; border-radius:16px; padding:40px; max-width:520px; width:100%; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,.4); }
-  h1 { font-size:1.6rem; margin-bottom:8px; }
-  .badge { display:inline-block; margin:16px 0; padding:6px 14px; border-radius:999px; background:rgba(63,185,80,.15); color:#3fb950; font-weight:600; font-size:.9rem; }
-  p { color:var(--muted); line-height:1.6; }
-  code { background:#0d1117; padding:2px 6px; border-radius:6px; color:var(--accent); font-size:.9rem; }
-  footer { margin-top:24px; font-size:.8rem; color:#6e7681; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 70% -10%, #16202c 0%, var(--bg) 55%);
+    color:var(--fg); min-height:100vh; padding:32px 16px 64px;
+  }
+  .wrap { max-width:920px; margin:0 auto; }
+  header { text-align:center; margin-bottom:28px; }
+  h1 { font-size:1.9rem; letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin-top:6px; font-size:.95rem; }
+  .updated { display:inline-block; margin-top:12px; font-size:.8rem; color:var(--muted);
+    border:1px solid var(--border); border-radius:999px; padding:4px 12px; }
+  .search { margin:24px auto 8px; max-width:520px; }
+  .search input {
+    width:100%; padding:13px 16px; border-radius:12px; border:1px solid var(--border);
+    background:var(--bg2); color:var(--fg); font-size:1rem; outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .search input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(88,166,255,.18); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; margin-top:24px; }
+  .card {
+    display:block; text-decoration:none; color:inherit; background:var(--card);
+    border:1px solid var(--border); border-radius:16px; padding:18px 18px 14px;
+    transition:transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .card:hover { transform:translateY(-3px); border-color:var(--accent);
+    box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .card-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .card-title { font-weight:650; font-size:1.05rem; }
+  .card-date { font-size:.72rem; color:var(--muted); white-space:nowrap; }
+  .card-desc { color:var(--muted); font-size:.85rem; margin-top:8px; line-height:1.45;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-go { margin-top:12px; color:var(--accent); font-size:.85rem; font-weight:600; }
+  .empty { color:var(--muted); text-align:center; padding:40px; grid-column:1/-1; }
+  footer { text-align:center; color:#6e7681; font-size:.78rem; margin-top:40px; }
+  mark { background:rgba(88,166,255,.28); color:var(--fg); border-radius:3px; padding:0 2px; }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🚀 for-AI deploy</h1>
-    <div class="badge">✓ Зв'язок працює</div>
-    <p>Це тестова сторінка, запушена через SSH deploy-key з ноутбука Юрія. Якщо ти її бачиш — пайплайн публікації HTML у публічний репозиторій функціонує.</p>
-    <p style="margin-top:16px">Надалі сюди автоматично пушитимуться звіти (напр. <code>pulse-report.html</code>) для перегляду з будь-якого пристрою.</p>
-    <footer>Згенеровано Hermes Agent · <span id="ts"></span></footer>
+  <div class="wrap">
+    <header>
+      <h1>📂 for-AI · Навігація</h1>
+      <div class="sub">Автоматично згенеровані звіти й сторінки — відкрий у один клік</div>
+      <div class="updated">Оновлено: 16.07.2026 09:19 UTC</div>
+    </header>
+
+    <div class="search">
+      <input id="q" type="text" placeholder="🔎 Пошук по сторінках…" autocomplete="off" aria-label="Пошук">
+    </div>
+
+    <div class="grid" id="grid">
+      <a class="card" href="pulse-report.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Системний біограф (Pulse)</span>
+          <span class="card-date">16.07.2026 08:39</span>
+        </div>
+        <div class="card-desc">Pulse — системний біограф</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+    </div>
+
+    <footer>Згенеровано Hermes Agent · автоматичний пайплайн публікації</footer>
   </div>
-  <script>document.getElementById('ts').textContent = new Date().toLocaleString('uk-UA');</script>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const q = document.getElementById('q');
+    const cards = Array.from(grid.querySelectorAll('.card'));
+    q.addEventListener('input', () => {
+      const term = q.value.trim().toLowerCase();
+      cards.forEach(c => {
+        const text = c.textContent.toLowerCase();
+        const hit = !term || text.includes(term);
+        c.style.display = hit ? '' : 'none';
+        if (term && hit) {
+          c.querySelectorAll('.card-title,.card-desc').forEach(el => {
+            const re = new RegExp('('+term.replace(/[.*+?^${}()|[]\\]/g,'\\$&')+')','ig');
+            el.innerHTML = el.textContent.replace(re, '<mark>$1</mark>');
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
