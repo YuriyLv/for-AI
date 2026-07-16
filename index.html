@@ -28,7 +28,9 @@
     transition:border-color .15s, box-shadow .15s;
   }
   .search input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(88,166,255,.18); }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; margin-top:24px; }
+  .sec { font-size:1.15rem; margin:34px 0 4px; color:#fff; font-weight:650; }
+  .sec:first-of-type { margin-top:24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; margin-top:16px; }
   .card {
     display:block; text-decoration:none; color:inherit; background:var(--card);
     border:1px solid var(--border); border-radius:16px; padding:18px 18px 14px;
@@ -42,7 +44,7 @@
   .card-desc { color:var(--muted); font-size:.85rem; margin-top:8px; line-height:1.45;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .card-go { margin-top:12px; color:var(--accent); font-size:.85rem; font-weight:600; }
-  .empty { color:var(--muted); text-align:center; padding:40px; grid-column:1/-1; }
+  .empty { color:var(--muted); text-align:center; padding:40px; }
   footer { text-align:center; color:#6e7681; font-size:.78rem; margin-top:40px; }
   mark { background:rgba(88,166,255,.28); color:var(--fg); border-radius:3px; padding:0 2px; }
 </style>
@@ -51,21 +53,121 @@
   <div class="wrap">
     <header>
       <h1>📂 for-AI · Навігація</h1>
-      <div class="sub">Автоматично згенеровані звіти й сторінки — відкрий у один клік</div>
-      <div class="updated">Оновлено: 16.07.2026 09:19 UTC</div>
+      <div class="sub">Автоматично згенеровані звіти й навчальні матеріали — відкрий у один клік</div>
+      <div class="updated">Оновлено: 16.07.2026 10:41 UTC</div>
     </header>
 
     <div class="search">
       <input id="q" type="text" placeholder="🔎 Пошук по сторінках…" autocomplete="off" aria-label="Пошук">
     </div>
 
-    <div class="grid" id="grid">
+    <h2 class="sec">📊 Звіти (Pulse)</h2>
+    <div class="grid">
       <a class="card" href="pulse-report.html" target="_blank" rel="noopener">
         <div class="card-head">
-          <span class="card-title">Системний біограф (Pulse)</span>
-          <span class="card-date">16.07.2026 08:39</span>
+          <span class="card-title">Pulse report</span>
+          <span class="card-date">16.07.2026 09:19</span>
         </div>
         <div class="card-desc">Pulse — системний біограф</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+    </div>
+    <h2 class="sec">📚 Навчання (growth-coach)</h2>
+    <div class="grid">
+      <a class="card" href="articles/emotsiinyi-intelekt-za-stolom-chytaty-nastrii-hostei.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Emotsiinyi intelekt za stolom chytaty nastrii hostei</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Емоційний інтелект за столом: читати настрій гостей · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/hanba-i-provyna-kriz-stoichnyi-pohliad-syhnaly-tsinnostei.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Hanba i provyna kriz stoichnyi pohliad syhnaly tsinnostei</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Ганьба й провина крізь стоїчний погляд: сигнали цінностей · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/rei-dalio-radykalna-prozorist-u-biznesi.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Rei dalio radykalna prozorist u biznesi</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Рей Даліо: радикальна прозорість у бізнесі · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/model-ne-roby-pospishno-tsinnist-pauzy-pered-reaktsiieiu.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Model ne roby pospishno tsinnist pauzy pered reaktsiieiu</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Модель &amp;#x27;не роби поспішно&amp;#x27;: цінність паузи перед реакцією · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/vybachennia-za-perervu-italiiska-mi-scusi-un-momento.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Vybachennia za perervu italiiska mi scusi un momento</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Вибачення за перерву: італійська — &amp;#x27;Mi scusi un momento&amp;#x27; · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/chomu-velykyi-bar-iernyi-ryf-vydno-z-kosmosu.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Chomu velykyi bar iernyi ryf vydno z kosmosu</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Чому Великий бар&amp;#x27;єрний риф видно з космосу · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/latynskyi-pidpys-lysta-valete-budte-zdorovi.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Latynskyi pidpys lysta valete budte zdorovi</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Латинський підпис листа: &amp;#x27;Valete&amp;#x27; (будьте здорові) · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/riznytsia-mizh-espreso-ta-lunho.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Riznytsia mizh espreso ta lunho</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Різниця між еспресо та лунго · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/piramida-maslou-chy-spravdi-vona-iierarkhichna.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Piramida maslou chy spravdi vona iierarkhichna</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Піраміда Маслоу: чи справді вона ієрархічна · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/efekt-baiduzhosti-svidka-u-keruvanni-liudmy.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Efekt baiduzhosti svidka u keruvanni liudmy</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Ефект байдужості свідка у керуванні людьми · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/efekt-zatumanennia-iak-alkohol-ruinuie-arkhitekturu-snu.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Efekt zatumanennia iak alkohol ruinuie arkhitekturu snu</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Ефект затуманення: як алкоголь руйнує архітектуру сну · growth-coach</div>
+        <div class="card-go">Відкрити →</div>
+      </a>
+      <a class="card" href="articles/henri-ford-platyty-robitnykam-5-za-zminu-vyshche-rynku.html" target="_blank" rel="noopener">
+        <div class="card-head">
+          <span class="card-title">Henri ford platyty robitnykam 5 za zminu vyshche rynku</span>
+          <span class="card-date">16.07.2026 10:39</span>
+        </div>
+        <div class="card-desc">Генрі Форд: платити робітникам $5 за зміну (вище ринку) · growth-coach</div>
         <div class="card-go">Відкрити →</div>
       </a>
     </div>
@@ -76,7 +178,7 @@
   <script>
     const grid = document.getElementById('grid');
     const q = document.getElementById('q');
-    const cards = Array.from(grid.querySelectorAll('.card'));
+    const cards = Array.from(document.querySelectorAll('.card'));
     q.addEventListener('input', () => {
       const term = q.value.trim().toLowerCase();
       cards.forEach(c => {
