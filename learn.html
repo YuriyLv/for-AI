@@ -5,701 +5,270 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>for-AI · Навчання (бібліотека)</title>
 <style>
-  :root { --bg:#0d1117; --bg2:#11161d; --card:#161b22; --border:#30363d;
-    --fg:#e6edf3; --muted:#8b949e; --accent:#58a6ff; --accent2:#3fb950;
-    --chip:#11161d; --shadow:rgba(0,0,0,.35); }
-  [data-theme="light"] {
-    --bg:#f6f8fa; --bg2:#ffffff; --card:#ffffff; --border:#d0d7de;
-    --fg:#1f2328; --muted:#59636e; --accent:#0969da; --accent2:#1a7f37;
-    --chip:#eef2f6; --shadow:rgba(140,149,159,.25); }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:radial-gradient(1200px 600px at 70% -10%, #16202c 0%, var(--bg) 55%);
-    [data-theme="light"] & { background:radial-gradient(1200px 600px at 70% -10%, #e8eef5 0%, var(--bg) 55%); }
-    color:var(--fg); min-height:100vh; padding:32px 16px 64px; transition:background .2s,color .2s; }
-  .wrap { max-width:960px; margin:0 auto; }
-  header { text-align:center; margin-bottom:24px; }
-  h1 { font-size:1.9rem; letter-spacing:-.02em; }
-  .sub { color:var(--muted); margin-top:6px; font-size:.95rem; }
-  .updated { display:inline-block; margin-top:12px; font-size:.8rem; color:var(--muted);
-    border:1px solid var(--border); border-radius:999px; padding:4px 12px; }
-  .sec { font-size:1.15rem; margin:34px 0 4px; color:var(--fg); font-weight:650; }
-  .sec:first-of-type { margin-top:24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; margin-top:16px; }
-  .card { display:block; text-decoration:none; color:inherit; background:var(--card);
-    border:1px solid var(--border); border-radius:16px; padding:18px 18px 14px;
-    transition:transform .15s, border-color .15s, box-shadow .15s, opacity .2s;
-    animation:fade .25s ease; }
-  @keyframes fade { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
-  .card:hover { transform:translateY(-3px); border-color:var(--accent); box-shadow:0 10px 30px var(--shadow); }
-  .card-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
-  .card-title { font-weight:650; font-size:1.05rem; }
-  .card-date { font-size:.72rem; color:var(--muted); white-space:nowrap; }
-  .card-desc { color:var(--muted); font-size:.85rem; margin-top:8px; line-height:1.5;
-    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .card-go { margin-top:12px; color:var(--accent); font-size:.85rem; font-weight:600; }
-  .more { margin-top:18px; text-align:center; }
-  .more-btn { display:inline-block; padding:11px 22px; border:1px solid var(--accent);
-    border-radius:12px; color:var(--accent); text-decoration:none; font-weight:650; font-size:.92rem;
-    transition:background .15s; }
-  .more-btn:hover { background:color-mix(in srgb, var(--accent) 14%, transparent); }
-  .empty { color:var(--muted); text-align:center; padding:40px; grid-column:1/-1; }
-  footer { text-align:center; color:var(--muted); font-size:.78rem; margin-top:40px; }
-  mark { background:rgba(88,166,255,.28); color:var(--fg); border-radius:3px; padding:0 2px; }
-  .theme-toggle { position:fixed; top:16px; right:16px; z-index:20; width:42px; height:42px;
-    border-radius:50%; border:1px solid var(--border); background:var(--bg2); color:var(--fg);
-    font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:transform .15s, border-color .15s; }
-  .theme-toggle:hover { transform:scale(1.08); border-color:var(--accent); }
-  .totop { position:fixed; bottom:20px; right:20px; z-index:20; width:46px; height:46px;
-    border-radius:50%; border:1px solid var(--border); background:var(--accent); color:#fff;
-    font-size:1.3rem; cursor:pointer; display:none; align-items:center; justify-content:center;
-    box-shadow:0 6px 20px var(--shadow); transition:opacity .2s; }
-  .totop.show { display:flex; }
-
-  .back { display:inline-block; margin-bottom:6px; color:var(--accent); text-decoration:none;
-    font-size:.9rem; font-weight:600; }
-  .back:hover { opacity:.85; }
-  .controls { position:sticky; top:0; z-index:5; background:color-mix(in srgb, var(--bg) 92%, transparent);
-    backdrop-filter:blur(8px); padding:14px 0 12px; margin-bottom:8px; }
-  .search { margin:0 auto 12px; max-width:560px; position:relative; }
-  .search input { width:100%; padding:12px 16px 12px 42px; border-radius:12px;
-    border:1px solid var(--border); background:var(--bg2); color:var(--fg); font-size:1rem; outline:none;
-    transition:border-color .15s, box-shadow .15s; }
-  .search input:focus { border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
-  .search .ico { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); }
-  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
-    max-width:860px; margin:0 auto; }
-  .filters { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; flex:1; }
-  .chip { padding:7px 14px; border-radius:999px; border:1px solid var(--border); background:var(--chip);
-    color:var(--muted); font-size:.82rem; cursor:pointer; transition:all .15s; font-family:inherit; }
-  .chip:hover { color:var(--fg); border-color:var(--accent); }
-  .chip.active { background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent);
-    border-color:var(--accent); font-weight:600; }
-  .sort { padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg2);
-    color:var(--fg); font-size:.85rem; font-family:inherit; cursor:pointer; }
-  .count { text-align:center; color:var(--muted); font-size:.85rem; margin:14px 0 0; }
-  .pager { display:flex; gap:6px; justify-content:center; margin-top:28px; flex-wrap:wrap; }
-  .pager button { min-width:40px; padding:9px 12px; border-radius:10px; border:1px solid var(--border);
-    background:var(--bg2); color:var(--fg); font-size:.88rem; cursor:pointer; font-family:inherit; transition:all .15s; }
-  .pager button:hover:not(:disabled) { border-color:var(--accent); }
-  .pager button.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
-  .pager button:disabled { opacity:.4; cursor:default; }
-  /* бічна панель при >10 слотів */
-  .layout { display:grid; grid-template-columns:1fr; gap:18px; }
-  @media (min-width:880px) {
-    .layout.sidebar { grid-template-columns:230px 1fr; align-items:start; }
-    .sidebar-nav { position:sticky; top:170px; display:flex; flex-direction:column; gap:6px;
-      border:1px solid var(--border); border-radius:14px; padding:12px; background:var(--card); }
-    .sidebar-nav .sb { display:flex; justify-content:space-between; align-items:center; gap:8px;
-      padding:8px 11px; border-radius:9px; color:var(--muted); cursor:pointer; font-size:.86rem;
-      transition:all .15s; border:1px solid transparent; }
-    .sidebar-nav .sb:hover { color:var(--fg); background:var(--bg2); }
-    .sidebar-nav .sb.active { color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent);
-      border-color:var(--accent); font-weight:600; }
-    .sidebar-nav .sb .n { font-size:.74rem; opacity:.8; }
-  }
+:root{--bg:#0d1117;--bg2:#11161d;--card:#161b22;--border:#30363d;--fg:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--chip:#11161d;--shadow:rgba(0,0,0,.35);}
+[data-theme="light"]{--bg:#f6f8fa;--bg2:#ffffff;--card:#ffffff;--border:#d0d7de;--fg:#1f2328;--muted:#59636e;--accent:#0969da;--accent2:#1a7f37;--chip:#eef2f6;--shadow:rgba(140,149,159,.25);}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 70% -10%, #16202c 0%, var(--bg) 55%);color:var(--fg);min-height:100vh;padding:32px 16px 64px;transition:background .2s,color .2s;}
+.wrap{max-width:960px;margin:0 auto;}
+header{text-align:center;margin-bottom:24px;}
+h1{font-size:1.9rem;letter-spacing:-.02em;}
+.sub{color:var(--muted);margin-top:6px;font-size:.95rem;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px;}
+.card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 14px;transition:transform .15s,border-color .15s,box-shadow .15s;}
+.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 10px 30px var(--shadow);}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.card-title{font-weight:650;font-size:1.05rem;}
+.card-date{font-size:.72rem;color:var(--muted);white-space:nowrap;}
+.card-desc{color:var(--muted);font-size:.85rem;margin-top:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.card-go{margin-top:12px;color:var(--accent);font-size:.85rem;font-weight:600;}
+.footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:40px;}
 </style>
 </head>
 <body>
-  <button class="theme-toggle" id="themeToggle" title="Тема">🌙</button>
-  <div class="wrap">
-    <header>
-      <a class="back" href="index.html">← На головну</a>
-      <h1>📚 Навчання (growth-coach)</h1>
-      <div class="sub">Бібліотека всіх навчальних матеріалів · фільтруй, сортуй, шукай, гортай сторінки</div>
-      <div class="updated">Оновлено: 22.07.2026 04:06 UTC</div>
-    </header>
-
-    <div class="controls">
-      <div class="search">
-        <span class="ico">🔎</span>
-        <input id="q" type="text" placeholder="Пошук по матеріалах…  (клавіша /)" autocomplete="off" aria-label="Пошук">
-      </div>
-      <div class="bar">
-        <div class="filters" id="filters">
-      <button class="chip active" data-filter="all">Усі (55)</button>
-      <button class="chip" data-filter="morning_mindset">🌅 Ранковий налаштовувач (8)</button>
-      <button class="chip" data-filter="high_culture">🎭 Висока культура (7)</button>
-      <button class="chip" data-filter="micro_learning">🧠 Мікронавчання (7)</button>
-      <button class="chip" data-filter="great_minds">🧭 Великі уми (7)</button>
-      <button class="chip" data-filter="curiosity">🔍 Цікавість (6)</button>
-      <button class="chip" data-filter="etiquette">🍽️ Етикет (6)</button>
-      <button class="chip" data-filter="editorial">🧩 Аналітика (2)</button>
-      <button class="chip" data-filter="leadership">👥 Лідерство (6)</button>
-      <button class="chip" data-filter="language_phrase">🗣️ Мовна фраза (6)</button>
-        </div>
-        <select class="sort" id="sort" title="Сортування">
-          <option value="date_desc">Спочатку нові</option>
-          <option value="date_asc">Спочатку старі</option>
-          <option value="title">За назвою (А–Я)</option>
-          <option value="slot">За категорією</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="count" id="count"></div>
-
-    <div class="layout">
-
-      <div>
-        <div class="grid" id="grid">
-      <a class="card" href="articles/efekt-danninha-kriuhera-chomu-nevihliasy-pereotsiniuiut-sebe.html" data-slot="morning_mindset" data-title="Efekt danninha kriuhera chomu nevihliasy pereotsiniuiut sebe" data-date="2026-07-22" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Efekt danninha kriuhera chomu nevihliasy pereotsiniuiut sebe</span>
-          <span class="card-date">22.07.2026 04:06</span>
-        </div>
-        <div class="card-desc">Ефект Даннінга-Крюгера: чому невігляси переоцінюють себе · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-bakh-henialnyi-matematyka-i-struktura-v-muzytsi.html" data-slot="high_culture" data-title="Chomu bakh henialnyi matematyka i struktura v muzytsi" data-date="2026-07-21" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu bakh henialnyi matematyka i struktura v muzytsi</span>
-          <span class="card-date">21.07.2026 20:06</span>
-        </div>
-        <div class="card-desc">Чому Бах геніальний: математика й структура в музиці · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/brytva-okkama-chomu-naiprostishe-poiasnennia-chasto-pravylne.html" data-slot="morning_mindset" data-title="Brytva okkama chomu naiprostishe poiasnennia chasto pravylne" data-date="2026-07-21" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Brytva okkama chomu naiprostishe poiasnennia chasto pravylne</span>
-          <span class="card-date">21.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Бритва Оккама: чому найпростіше пояснення часто правильне · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/efekt-metelyka-chutlyvist-do-pochatkovykh-umov.html" data-slot="micro_learning" data-title="Efekt metelyka chutlyvist do pochatkovykh umov" data-date="2026-07-21" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Efekt metelyka chutlyvist do pochatkovykh umov</span>
-          <span class="card-date">21.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Ефект метелика: чутливість до початкових умов · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/rishennia-baffeta-trymaty-kesh-pid-chas-rynkovoho-bumu.html" data-slot="great_minds" data-title="Rishennia baffeta trymaty kesh pid chas rynkovoho bumu" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Rishennia baffeta trymaty kesh pid chas rynkovoho bumu</span>
-          <span class="card-date">20.07.2026 20:06</span>
-        </div>
-        <div class="card-desc">Рішення Баффета тримати кеш під час ринкового буму · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/skilky-zirok-vydno-neozbroienym-okom-6000.html" data-slot="curiosity" data-title="Skilky zirok vydno neozbroienym okom 6000" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Skilky zirok vydno neozbroienym okom 6000</span>
-          <span class="card-date">20.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Скільки зірок видно неозброєним оком (~6000) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/rukostyskannia-syla-tryvalist-kontakt-ochei.html" data-slot="etiquette" data-title="Rukostyskannia syla tryvalist kontakt ochei" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Rukostyskannia syla tryvalist kontakt ochei</span>
-          <span class="card-date">20.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Рукостискання: сила, тривалість, контакт очей · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/frantsuzka-materynska-kukhnia-cuisine-bourgeoise.html" data-slot="high_culture" data-title="Frantsuzka materynska kukhnia cuisine bourgeoise" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Frantsuzka materynska kukhnia cuisine bourgeoise</span>
-          <span class="card-date">20.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Французька материнська кухня (cuisine bourgeoise) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/doroslyi-za-versiieiu-dokumentiv-stendap.html" data-slot="editorial" data-title="Doroslyi za versiieiu dokumentiv stendap" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Doroslyi za versiieiu dokumentiv stendap</span>
-          <span class="card-date">20.07.2026 12:36</span>
-        </div>
-        <div class="card-desc">Сольний стендап-номер на ~10 хвилин для відкритого мікрофона. Оповідачу 40+, авдиторія — молодші (20–30+). Наскрізна рамка: «не повторюйте моїх помилок» — досвідчений, але…</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/kryvi-zrostannia-komandy-koly-ne-vtruchatysia.html" data-slot="leadership" data-title="Kryvi zrostannia komandy koly ne vtruchatysia" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Kryvi zrostannia komandy koly ne vtruchatysia</span>
-          <span class="card-date">20.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Криві зростання команди: коли не втручатися · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/futbol-iak-komertsiinyi-produkt-chomu-znykla-chysta-sportyvna-borotba.html" data-slot="editorial" data-title="Futbol iak komertsiinyi produkt chomu znykla chysta sportyvna borotba" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Futbol iak komertsiinyi produkt chomu znykla chysta sportyvna borotba</span>
-          <span class="card-date">20.07.2026 10:57</span>
-        </div>
-        <div class="card-desc">Сучасний футбол дедалі рідше нагадує чесне змагання рівних. Рішення, які десятиліттями приймалися на полі відповідно до правил, тепер усе частіше переписують у кабінетах —…</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/vybachennia-frantsuzka-je-vous-prie-de-m-excuser.html" data-slot="language_phrase" data-title="Vybachennia frantsuzka je vous prie de m excuser" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Vybachennia frantsuzka je vous prie de m excuser</span>
-          <span class="card-date">20.07.2026 10:57</span>
-        </div>
-        <div class="card-desc">Вибачення: французька — &amp;#x27;Je vous prie de m&amp;#x27;excuser&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/skladnyi-vidsotok-vosme-dyvo-svitu-alberta-einshteina.html" data-slot="micro_learning" data-title="Skladnyi vidsotok vosme dyvo svitu alberta einshteina" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Skladnyi vidsotok vosme dyvo svitu alberta einshteina</span>
-          <span class="card-date">20.07.2026 07:11</span>
-        </div>
-        <div class="card-desc">Складний відсоток: восьме диво світу Альберта Ейнштейна · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/dykhotomiia-kontroliu-epikteta-shcho-u-tvoii-vladi-a-shcho-ni.html" data-slot="morning_mindset" data-title="Dykhotomiia kontroliu epikteta shcho u tvoii vladi a shcho ni" data-date="2026-07-20" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Dykhotomiia kontroliu epikteta shcho u tvoii vladi a shcho ni</span>
-          <span class="card-date">20.07.2026 07:11</span>
-        </div>
-        <div class="card-desc">Дихотомія контролю Епіктета: що у твоїй владі, а що ні · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/cherchyll-i-rishennia-1940-prodovzhuvaty-borotbu-popry-porazky.html" data-slot="great_minds" data-title="Cherchyll i rishennia 1940 prodovzhuvaty borotbu popry porazky" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Cherchyll i rishennia 1940 prodovzhuvaty borotbu popry porazky</span>
-          <span class="card-date">19.07.2026 20:06</span>
-        </div>
-        <div class="card-desc">Черчилль і рішення 1940: продовжувати боротьбу попри поразки · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-kishky-maizhe-zavzhdy-pryzemliaiutsia-na-lapy-refleks-pravlennia.html" data-slot="curiosity" data-title="Chomu kishky maizhe zavzhdy pryzemliaiutsia na lapy refleks pravlennia" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu kishky maizhe zavzhdy pryzemliaiutsia na lapy refleks pravlennia</span>
-          <span class="card-date">19.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому кішки майже завжди приземляються на лапи (рефлекс правлення) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/iak-dehustuvaty-vyno-kolir-aromat-prysmak-pisliasmak.html" data-slot="high_culture" data-title="Iak dehustuvaty vyno kolir aromat prysmak pisliasmak" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Iak dehustuvaty vyno kolir aromat prysmak pisliasmak</span>
-          <span class="card-date">19.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Як дегустувати вино: колір, аромат, присмак, післясмак · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/serviruvannia-stolu-roztashuvannia-pryladiv-i-tarilok.html" data-slot="etiquette" data-title="Serviruvannia stolu roztashuvannia pryladiv i tarilok" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Serviruvannia stolu roztashuvannia pryladiv i tarilok</span>
-          <span class="card-date">19.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Сервірування столу: розташування приладів і тарілок · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/dilova-zustrich-anhliiska-let-s-circle-back-on-this.html" data-slot="language_phrase" data-title="Dilova zustrich anhliiska let s circle back on this" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Dilova zustrich anhliiska let s circle back on this</span>
-          <span class="card-date">19.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Ділова зустріч: англійська — &amp;#x27;Let&amp;#x27;s circle back on this&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/metod-porozhnoho-stiltsia-dlia-rozuminnia-inshoi-storony.html" data-slot="leadership" data-title="Metod porozhnoho stiltsia dlia rozuminnia inshoi storony" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Metod porozhnoho stiltsia dlia rozuminnia inshoi storony</span>
-          <span class="card-date">19.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Метод &amp;#x27;порожнього стільця&amp;#x27; для розуміння іншої сторони · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/amor-fati-liubov-do-doli-iak-obiiniaty-te-shcho-ne-mozhna-zminyty.html" data-slot="morning_mindset" data-title="Amor fati liubov do doli iak obiiniaty te shcho ne mozhna zminyty" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Amor fati liubov do doli iak obiiniaty te shcho ne mozhna zminyty</span>
-          <span class="card-date">19.07.2026 08:06</span>
-        </div>
-        <div class="card-desc">Амор фаті — любов до долі: як обійняти те, що не можна змінити · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-nebo-blakytne-efekt-rozsiiannia-releia.html" data-slot="micro_learning" data-title="Chomu nebo blakytne efekt rozsiiannia releia" data-date="2026-07-19" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu nebo blakytne efekt rozsiiannia releia</span>
-          <span class="card-date">19.07.2026 08:06</span>
-        </div>
-        <div class="card-desc">Чому небо блакитне: ефект розсіяння Релея · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/teodor-ruzvelt-doktryna-hovory-tykho-ale-trymai-velykyi-kyiok.html" data-slot="great_minds" data-title="Teodor ruzvelt doktryna hovory tykho ale trymai velykyi kyiok" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Teodor ruzvelt doktryna hovory tykho ale trymai velykyi kyiok</span>
-          <span class="card-date">18.07.2026 20:06</span>
-        </div>
-        <div class="card-desc">Теодор Рузвельт: доктрина &amp;#x27;говори тихо, але тримай великий кийок&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/iak-vesty-sebe-na-teatralnii-abo-opernii-vystavi.html" data-slot="etiquette" data-title="Iak vesty sebe na teatralnii abo opernii vystavi" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Iak vesty sebe na teatralnii abo opernii vystavi</span>
-          <span class="card-date">18.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Як вести себе на театральній або оперній виставі · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/symfonichnyi-orkestr-iaki-instrumenty-de-sydiat.html" data-slot="high_culture" data-title="Symfonichnyi orkestr iaki instrumenty de sydiat" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Symfonichnyi orkestr iaki instrumenty de sydiat</span>
-          <span class="card-date">18.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Симфонічний оркестр: які інструменти де сидять · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-okean-solonyi-vyvitriuvannia-porid.html" data-slot="curiosity" data-title="Chomu okean solonyi vyvitriuvannia porid" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu okean solonyi vyvitriuvannia porid</span>
-          <span class="card-date">18.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому океан солоний (вивітрювання порід) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/liderstvo-cherez-pytannia-a-ne-nakazy.html" data-slot="leadership" data-title="Liderstvo cherez pytannia a ne nakazy" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Liderstvo cherez pytannia a ne nakazy</span>
-          <span class="card-date">18.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Лідерство через питання, а не накази · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/pidbyttia-pidsumku-zustrichi-anhliiska-to-recap-our-action-items.html" data-slot="language_phrase" data-title="Pidbyttia pidsumku zustrichi anhliiska to recap our action items" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Pidbyttia pidsumku zustrichi anhliiska to recap our action items</span>
-          <span class="card-date">18.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Підбиття підсумку зустрічі: англійська — &amp;#x27;To recap our action items…&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/kohnityvne-spotvorennia-status-kvo-strakh-zmin.html" data-slot="micro_learning" data-title="Kohnityvne spotvorennia status kvo strakh zmin" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Kohnityvne spotvorennia status kvo strakh zmin</span>
-          <span class="card-date">18.07.2026 08:06</span>
-        </div>
-        <div class="card-desc">Когнітивне спотворення &amp;#x27;статус-кво&amp;#x27;: страх змін · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/pryntsyp-oblyshyty-te-shcho-ne-nashe-stoichne-samovladannia.html" data-slot="morning_mindset" data-title="Pryntsyp oblyshyty te shcho ne nashe stoichne samovladannia" data-date="2026-07-18" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Pryntsyp oblyshyty te shcho ne nashe stoichne samovladannia</span>
-          <span class="card-date">18.07.2026 08:06</span>
-        </div>
-        <div class="card-desc">Принцип &amp;#x27;облишити те, що не наше&amp;#x27;: стоїчне самовладання · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/koko-shanel-zrobyty-chorne-i-proste-symvolom-elehantnosti.html" data-slot="great_minds" data-title="Koko shanel zrobyty chorne i proste symvolom elehantnosti" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Koko shanel zrobyty chorne i proste symvolom elehantnosti</span>
-          <span class="card-date">17.07.2026 20:06</span>
-        </div>
-        <div class="card-desc">Коко Шанель: зробити чорне й просте символом елегантності · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/pravyla-vitannia-v-riznykh-kulturakh-poklin-potsilunok-kyvok.html" data-slot="etiquette" data-title="Pravyla vitannia v riznykh kulturakh poklin potsilunok kyvok" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Pravyla vitannia v riznykh kulturakh poklin potsilunok kyvok</span>
-          <span class="card-date">17.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Правила вітання в різних культурах (поклін, поцілунок, кивок) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-my-bachymo-zirky-pislia-udaru-po-oku.html" data-slot="curiosity" data-title="Chomu my bachymo zirky pislia udaru po oku" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu my bachymo zirky pislia udaru po oku</span>
-          <span class="card-date">17.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому ми бачимо &amp;#x27;зірки&amp;#x27; після удару по оку · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chaina-tseremoniia-iak-forma-vysokoi-kultury.html" data-slot="high_culture" data-title="Chaina tseremoniia iak forma vysokoi kultury" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chaina tseremoniia iak forma vysokoi kultury</span>
-          <span class="card-date">17.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чайна церемонія як форма високої культури · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/vitannia-hostei-frantsuzka-soyez-le-bienvenu.html" data-slot="language_phrase" data-title="Vitannia hostei frantsuzka soyez le bienvenu" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Vitannia hostei frantsuzka soyez le bienvenu</span>
-          <span class="card-date">17.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Вітання гостей: французька — &amp;#x27;Soyez le bienvenu&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/pravylo-pareto-80-20-dlia-priorytezatsii.html" data-slot="leadership" data-title="Pravylo pareto 80 20 dlia priorytezatsii" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Pravylo pareto 80 20 dlia priorytezatsii</span>
-          <span class="card-date">17.07.2026 12:06</span>
-        </div>
-        <div class="card-desc">Правило Парето (80/20) для пріоритезації · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/abstrahuvannia-pidnimatysia-rivnem-vyshche-za-problemu.html" data-slot="morning_mindset" data-title="Abstrahuvannia pidnimatysia rivnem vyshche za problemu" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Abstrahuvannia pidnimatysia rivnem vyshche za problemu</span>
-          <span class="card-date">17.07.2026 07:43</span>
-        </div>
-        <div class="card-desc">Абстрагування: підніматися рівнем вище за проблему · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/zakon-termodynamiky-ta-efektyvnist-chomu-vichnyi-dvyhun-nemozhlyvyi.html" data-slot="micro_learning" data-title="Zakon termodynamiky ta efektyvnist chomu vichnyi dvyhun nemozhlyvyi" data-date="2026-07-17" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Zakon termodynamiky ta efektyvnist chomu vichnyi dvyhun nemozhlyvyi</span>
-          <span class="card-date">17.07.2026 07:43</span>
-        </div>
-        <div class="card-desc">Закон термодинаміки та ефективність: чому вічний двигун неможливий · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/albert-einshtein-vidmova-vid-posady-prezydenta-izrailiu.html" data-slot="great_minds" data-title="Albert einshtein vidmova vid posady prezydenta izrailiu" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Albert einshtein vidmova vid posady prezydenta izrailiu</span>
-          <span class="card-date">16.07.2026 18:58</span>
-        </div>
-        <div class="card-desc">Альберт Ейнштейн: відмова від посади президента Ізраїлю · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/emotsiinyi-intelekt-za-stolom-chytaty-nastrii-hostei.html" data-slot="etiquette" data-title="Emotsiinyi intelekt za stolom chytaty nastrii hostei" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Emotsiinyi intelekt za stolom chytaty nastrii hostei</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Емоційний інтелект за столом: читати настрій гостей · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/etyket-sotsmerezh-shcho-publikuvaty-choho-unykaty.html" data-slot="etiquette" data-title="Etyket sotsmerezh shcho publikuvaty choho unykaty" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Etyket sotsmerezh shcho publikuvaty choho unykaty</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Етикет соцмереж: що публікувати, чого уникати · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/hanba-i-provyna-kriz-stoichnyi-pohliad-syhnaly-tsinnostei.html" data-slot="morning_mindset" data-title="Hanba i provyna kriz stoichnyi pohliad syhnaly tsinnostei" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Hanba i provyna kriz stoichnyi pohliad syhnaly tsinnostei</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Ганьба й провина крізь стоїчний погляд: сигнали цінностей · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/rei-dalio-radykalna-prozorist-u-biznesi.html" data-slot="great_minds" data-title="Rei dalio radykalna prozorist u biznesi" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Rei dalio radykalna prozorist u biznesi</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Рей Даліо: радикальна прозорість у бізнесі · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/model-ne-roby-pospishno-tsinnist-pauzy-pered-reaktsiieiu.html" data-slot="morning_mindset" data-title="Model ne roby pospishno tsinnist pauzy pered reaktsiieiu" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Model ne roby pospishno tsinnist pauzy pered reaktsiieiu</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Модель &amp;#x27;не роби поспішно&amp;#x27;: цінність паузи перед реакцією · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/model-vazhkoi-rozmovy-sbi-situation-behavior-impact.html" data-slot="leadership" data-title="Model vazhkoi rozmovy sbi situation behavior impact" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Model vazhkoi rozmovy sbi situation behavior impact</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Модель важкої розмови SBI (Situation-Behavior-Impact) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/vybachennia-za-perervu-italiiska-mi-scusi-un-momento.html" data-slot="language_phrase" data-title="Vybachennia za perervu italiiska mi scusi un momento" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Vybachennia za perervu italiiska mi scusi un momento</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Вибачення за перерву: італійська — &amp;#x27;Mi scusi un momento&amp;#x27; · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-velykyi-bar-iernyi-ryf-vydno-z-kosmosu.html" data-slot="curiosity" data-title="Chomu velykyi bar iernyi ryf vydno z kosmosu" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu velykyi bar iernyi ryf vydno z kosmosu</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому Великий бар&amp;#x27;єрний риф видно з космосу · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-shekspir-dosi-aktualnyi.html" data-slot="high_culture" data-title="Chomu shekspir dosi aktualnyi" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu shekspir dosi aktualnyi</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому Шекспір досі актуальний · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/chomu-metaly-kholodni-na-dotyk-teploprovidnist.html" data-slot="curiosity" data-title="Chomu metaly kholodni na dotyk teploprovidnist" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Chomu metaly kholodni na dotyk teploprovidnist</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Чому метали холодні на дотик (теплопровідність) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/latynskyi-pidpys-lysta-valete-budte-zdorovi.html" data-slot="language_phrase" data-title="Latynskyi pidpys lysta valete budte zdorovi" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Latynskyi pidpys lysta valete budte zdorovi</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Латинський підпис листа: &amp;#x27;Valete&amp;#x27; (будьте здорові) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/riznytsia-mizh-espreso-ta-lunho.html" data-slot="high_culture" data-title="Riznytsia mizh espreso ta lunho" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Riznytsia mizh espreso ta lunho</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Різниця між еспресо та лунго · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/piramida-maslou-chy-spravdi-vona-iierarkhichna.html" data-slot="micro_learning" data-title="Piramida maslou chy spravdi vona iierarkhichna" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Piramida maslou chy spravdi vona iierarkhichna</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Піраміда Маслоу: чи справді вона ієрархічна · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/efekt-baiduzhosti-svidka-u-keruvanni-liudmy.html" data-slot="leadership" data-title="Efekt baiduzhosti svidka u keruvanni liudmy" data-date="2026-07-15" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Efekt baiduzhosti svidka u keruvanni liudmy</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Ефект байдужості свідка у керуванні людьми · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/efekt-zatumanennia-iak-alkohol-ruinuie-arkhitekturu-snu.html" data-slot="micro_learning" data-title="Efekt zatumanennia iak alkohol ruinuie arkhitekturu snu" data-date="2026-07-16" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Efekt zatumanennia iak alkohol ruinuie arkhitekturu snu</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Ефект затуманення: як алкоголь руйнує архітектуру сну · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-      <a class="card" href="articles/henri-ford-platyty-robitnykam-5-za-zminu-vyshche-rynku.html" data-slot="great_minds" data-title="Henri ford platyty robitnykam 5 za zminu vyshche rynku" data-date="2026-07-14" target="_blank" rel="noopener">
-        <div class="card-head">
-          <span class="card-title">Henri ford platyty robitnykam 5 za zminu vyshche rynku</span>
-          <span class="card-date">16.07.2026 16:06</span>
-        </div>
-        <div class="card-desc">Генрі Форд: платити робітникам $5 за зміну (вище ринку) · growth-coach</div>
-        <div class="card-go">Відкрити →</div>
-      </a>
-        </div>
-        <div class="pager" id="pager"></div>
-      </div>
-    </div>
-
-    <footer>Згенеровано Hermes Agent · автоматичний пайплайн публікації</footer>
-  </div>
-  <button class="totop" id="totop" title="Догори">↑</button>
-  <script>
-    const PAGE_SIZE = 24;
-    const grid = document.getElementById('grid');
-    const q = document.getElementById('q');
-    const pager = document.getElementById('pager');
-    const countEl = document.getElementById('count');
-    const sortSel = document.getElementById('sort');
-    const filtEls = Array.from(document.querySelectorAll('[data-filter]'));
-    const tg = document.getElementById('themeToggle');
-    const root = document.documentElement;
-    let cards = Array.from(grid.querySelectorAll('.card'));
-    let activeFilter = 'all';
-    let activePage = 1;
-    let activeSort = 'date_desc';
-
-    function esc(t) { return t.replace(/[.*+?^${}()|[]\\]/g, '\\$&'); }
-
-    function applyTheme(t) { root.setAttribute('data-theme', t);
-      tg.textContent = t === 'light' ? '☀️' : '🌙'; }
-    let theme = localStorage.getItem('forai-theme') || 'dark';
-    applyTheme(theme);
-    tg.onclick = () => { theme = theme === 'light' ? 'dark' : 'light';
-      localStorage.setItem('forai-theme', theme); applyTheme(theme); };
-
-    function sortCards(list) {
-      const arr = list.slice();
-      if (activeSort === 'date_desc') arr.sort((a,b)=> b.dataset.date.localeCompare(a.dataset.date));
-      else if (activeSort === 'date_asc') arr.sort((a,b)=> a.dataset.date.localeCompare(b.dataset.date));
-      else if (activeSort === 'title') arr.sort((a,b)=> a.dataset.title.localeCompare(b.dataset.title, 'uk'));
-      else if (activeSort === 'slot') arr.sort((a,b)=> (a.dataset.slot||'').localeCompare(b.dataset.slot||''));
-      return arr;
-    }
-
-    function render() {
-      const term = q.value.trim().toLowerCase();
-      // фільтр + пошук
-      let visible = cards.filter(c => {
-        const slot = c.dataset.slot || '';
-        const matchF = activeFilter === 'all' || slot === activeFilter;
-        const matchT = !term || c.textContent.toLowerCase().includes(term);
-        return matchF && matchT;
-      });
-      visible = sortCards(visible);
-      // пагінація
-      const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
-      if (activePage > totalPages) activePage = totalPages;
-      const start = (activePage-1)*PAGE_SIZE;
-      cards.forEach(c => c.style.display = 'none');
-      visible.forEach((c, i) => {
-        c.style.display = (i >= start && i < start+PAGE_SIZE) ? '' : 'none';
-        if (term) {
-          c.querySelectorAll('.card-title,.card-desc').forEach(el => {
-            const re = new RegExp('('+esc(term)+')','ig');
-            el.innerHTML = el.textContent.replace(re, '<mark>$1</mark>'); });
-        } else {
-          c.querySelectorAll('.card-title,.card-desc').forEach(el => el.innerHTML = el.textContent);
-        }
-      });
-      countEl.textContent = `Показано ${Math.min(PAGE_SIZE, visible.length - start)} з ${visible.length} матеріалів`;
-      // пагер
-      pager.innerHTML = '';
-      if (totalPages <= 1) return;
-      const mk = (txt, dis, fn) => { const b=document.createElement('button');
-        b.textContent=txt; b.disabled=dis; if(!dis) b.onclick=fn; pager.appendChild(b); };
-      mk('←', activePage===1, ()=>{ activePage--; render(); });
-      const ws=5, s=Math.max(1,activePage-2), e=Math.min(totalPages, s+ws-1), st=Math.max(1,e-ws+1);
-      for(let p=st;p<=e;p++){ const b=document.createElement('button');
-        b.textContent=p; if(p===activePage) b.classList.add('active');
-        b.onclick=()=>{ activePage=p; render(); }; pager.appendChild(b); }
-      mk('→', activePage===totalPages, ()=>{ activePage++; render(); });
-    }
-
-    // фільтри (чіпи + бічна панель)
-    filtEls.forEach(el => el.onclick = () => {
-      filtEls.forEach(x => x.classList.remove('active'));
-      el.classList.add('active');
-      activeFilter = el.dataset.filter; activePage = 1; render();
-      localStorage.setItem('forai-filter', activeFilter);
-    });
-    // відновлення фільтра
-    const sf = localStorage.getItem('forai-filter');
-    if (sf && sf !== 'all') { const el = filtEls.find(x=>x.dataset.filter===sf);
-      if(el) el.click(); }
-    // сортування
-    sortSel.onchange = () => { activeSort = sortSel.value; activePage=1;
-      localStorage.setItem('forai-sort', activeSort); render(); };
-    const ss = localStorage.getItem('forai-sort');
-    if (ss) { sortSel.value = ss; activeSort = ss; }
-    // пошук + клавіатура
-    q.addEventListener('input', () => { activePage=1; render(); });
-    document.addEventListener('keydown', (ev) => {
-      if (ev.key === '/' && document.activeElement !== q) { ev.preventDefault(); q.focus(); }
-      else if (ev.key === 'Escape' && document.activeElement === q) { q.value=''; activePage=1; render(); q.blur(); }
-      else if ((ev.key === 'ArrowLeft') && document.activeElement !== q) {
-        if(activePage>1){ activePage--; render(); } }
-      else if ((ev.key === 'ArrowRight') && document.activeElement !== q) {
-        const totalPages = Math.max(1, Math.ceil(cards.filter(c=>{
-          const m = activeFilter==='all'||(c.dataset.slot||'')===activeFilter;
-          const t = !q.value.trim()||c.textContent.toLowerCase().includes(q.value.trim().toLowerCase());
-          return m&&t; }).length / PAGE_SIZE));
-        if(activePage<totalPages){ activePage++; render(); } }
-    });
-    // догори
-    const totop = document.getElementById('totop');
-    window.addEventListener('scroll', () => totop.classList.toggle('show', window.scrollY > 400));
-    totop.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-
-    render();
-  </script>
+<div class="wrap">
+<header>
+  <h1>for-AI · Навчання (бібліотека)</h1>
+  <div class="sub">Усі матеріали: 59</div>
+</header>
+<div class="cards-grid">
+<a class="card" href="articles/henri-ford-platyty-robitnykam-5-za-zminu-vyshche-rynku.html" data-slot="great_minds" data-title="Генрі Форд: платити робітникам $5 за зміну (вище ринку)" data-date="2026-07-14" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Генрі Форд: платити робітникам $5 за зміну (вище ринку)</span><span class="card-date">2026-07-14</span></div>
+<div class="card-desc">Генрі Форд: платити робітникам $5 за зміну (вище ринку) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/model-ne-roby-pospishno-tsinnist-pauzy-pered-reaktsiieiu.html" data-slot="morning_mindset" data-title="Модель &#x27;не роби поспішно&#x27;: цінність паузи перед реакцією" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Модель &#x27;не роби поспішно&#x27;: цінність паузи перед реакцією</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Модель &#x27;не роби поспішно&#x27;: цінність паузи перед реакцією · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/piramida-maslou-chy-spravdi-vona-iierarkhichna.html" data-slot="micro_learning" data-title="Піраміда Маслоу: чи справді вона ієрархічна" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Піраміда Маслоу: чи справді вона ієрархічна</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Піраміда Маслоу: чи справді вона ієрархічна · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/latynskyi-pidpys-lysta-valete-budte-zdorovi.html" data-slot="language_phrase" data-title="Латинський підпис листа: &#x27;Valete&#x27; (будьте здорові)" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Латинський підпис листа: &#x27;Valete&#x27; (будьте здорові)</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Латинський підпис листа: &#x27;Valete&#x27; (будьте здорові) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/efekt-baiduzhosti-svidka-u-keruvanni-liudmy.html" data-slot="leadership" data-title="Ефект байдужості свідка у керуванні людьми" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ефект байдужості свідка у керуванні людьми</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Ефект байдужості свідка у керуванні людьми · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/emotsiinyi-intelekt-za-stolom-chytaty-nastrii-hostei.html" data-slot="etiquette" data-title="Емоційний інтелект за столом: читати настрій гостей" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Емоційний інтелект за столом: читати настрій гостей</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Емоційний інтелект за столом: читати настрій гостей · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-velykyi-bar-iernyi-ryf-vydno-z-kosmosu.html" data-slot="curiosity" data-title="Чому Великий бар&#x27;єрний риф видно з космосу" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому Великий бар&#x27;єрний риф видно з космосу</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Чому Великий бар&#x27;єрний риф видно з космосу · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/riznytsia-mizh-espreso-ta-lunho.html" data-slot="high_culture" data-title="Різниця між еспресо та лунго" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Різниця між еспресо та лунго</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Різниця між еспресо та лунго · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/rei-dalio-radykalna-prozorist-u-biznesi.html" data-slot="great_minds" data-title="Рей Даліо: радикальна прозорість у бізнесі" data-date="2026-07-15" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Рей Даліо: радикальна прозорість у бізнесі</span><span class="card-date">2026-07-15</span></div>
+<div class="card-desc">Рей Даліо: радикальна прозорість у бізнесі · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/hanba-i-provyna-kriz-stoichnyi-pohliad-syhnaly-tsinnostei.html" data-slot="morning_mindset" data-title="Ганьба й провина крізь стоїчний погляд: сигнали цінностей" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ганьба й провина крізь стоїчний погляд: сигнали цінностей</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Ганьба й провина крізь стоїчний погляд: сигнали цінностей · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/efekt-zatumanennia-iak-alkohol-ruinuie-arkhitekturu-snu.html" data-slot="micro_learning" data-title="Ефект затуманення: як алкоголь руйнує архітектуру сну" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ефект затуманення: як алкоголь руйнує архітектуру сну</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Ефект затуманення: як алкоголь руйнує архітектуру сну · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/vybachennia-za-perervu-italiiska-mi-scusi-un-momento.html" data-slot="language_phrase" data-title="Вибачення за перерву: італійська — &#x27;Mi scusi un momento&#x27;" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Вибачення за перерву: італійська — &#x27;Mi scusi un momento&#x27;</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Вибачення за перерву: італійська — &#x27;Mi scusi un momento&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/model-vazhkoi-rozmovy-sbi-situation-behavior-impact.html" data-slot="leadership" data-title="Модель важкої розмови SBI (Situation-Behavior-Impact)" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Модель важкої розмови SBI (Situation-Behavior-Impact)</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Модель важкої розмови SBI (Situation-Behavior-Impact) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/etyket-sotsmerezh-shcho-publikuvaty-choho-unykaty.html" data-slot="etiquette" data-title="Етикет соцмереж: що публікувати, чого уникати" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Етикет соцмереж: що публікувати, чого уникати</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Етикет соцмереж: що публікувати, чого уникати · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-metaly-kholodni-na-dotyk-teploprovidnist.html" data-slot="curiosity" data-title="Чому метали холодні на дотик (теплопровідність)" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому метали холодні на дотик (теплопровідність)</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Чому метали холодні на дотик (теплопровідність) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-shekspir-dosi-aktualnyi.html" data-slot="high_culture" data-title="Чому Шекспір досі актуальний" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому Шекспір досі актуальний</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Чому Шекспір досі актуальний · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/albert-einshtein-vidmova-vid-posady-prezydenta-izrailiu.html" data-slot="great_minds" data-title="Альберт Ейнштейн: відмова від посади президента Ізраїлю" data-date="2026-07-16" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Альберт Ейнштейн: відмова від посади президента Ізраїлю</span><span class="card-date">2026-07-16</span></div>
+<div class="card-desc">Альберт Ейнштейн: відмова від посади президента Ізраїлю · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/abstrahuvannia-pidnimatysia-rivnem-vyshche-za-problemu.html" data-slot="morning_mindset" data-title="Абстрагування: підніматися рівнем вище за проблему" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Абстрагування: підніматися рівнем вище за проблему</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Абстрагування: підніматися рівнем вище за проблему · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/zakon-termodynamiky-ta-efektyvnist-chomu-vichnyi-dvyhun-nemozhlyvyi.html" data-slot="micro_learning" data-title="Закон термодинаміки та ефективність: чому вічний двигун неможливий" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Закон термодинаміки та ефективність: чому вічний двигун неможливий</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Закон термодинаміки та ефективність: чому вічний двигун неможливий · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/vitannia-hostei-frantsuzka-soyez-le-bienvenu.html" data-slot="language_phrase" data-title="Вітання гостей: французька — &#x27;Soyez le bienvenu&#x27;" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Вітання гостей: французька — &#x27;Soyez le bienvenu&#x27;</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Вітання гостей: французька — &#x27;Soyez le bienvenu&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/pravylo-pareto-80-20-dlia-priorytezatsii.html" data-slot="leadership" data-title="Правило Парето (80/20) для пріоритезації" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Правило Парето (80/20) для пріоритезації</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Правило Парето (80/20) для пріоритезації · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/pravyla-vitannia-v-riznykh-kulturakh-poklin-potsilunok-kyvok.html" data-slot="etiquette" data-title="Правила вітання в різних культурах (поклін, поцілунок, кивок)" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Правила вітання в різних культурах (поклін, поцілунок, кивок)</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Правила вітання в різних культурах (поклін, поцілунок, кивок) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-my-bachymo-zirky-pislia-udaru-po-oku.html" data-slot="curiosity" data-title="Чому ми бачимо &#x27;зірки&#x27; після удару по оку" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому ми бачимо &#x27;зірки&#x27; після удару по оку</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Чому ми бачимо &#x27;зірки&#x27; після удару по оку · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chaina-tseremoniia-iak-forma-vysokoi-kultury.html" data-slot="high_culture" data-title="Чайна церемонія як форма високої культури" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чайна церемонія як форма високої культури</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Чайна церемонія як форма високої культури · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/koko-shanel-zrobyty-chorne-i-proste-symvolom-elehantnosti.html" data-slot="great_minds" data-title="Коко Шанель: зробити чорне й просте символом елегантності" data-date="2026-07-17" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Коко Шанель: зробити чорне й просте символом елегантності</span><span class="card-date">2026-07-17</span></div>
+<div class="card-desc">Коко Шанель: зробити чорне й просте символом елегантності · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/pryntsyp-oblyshyty-te-shcho-ne-nashe-stoichne-samovladannia.html" data-slot="morning_mindset" data-title="Принцип &#x27;облишити те, що не наше&#x27;: стоїчне самовладання" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Принцип &#x27;облишити те, що не наше&#x27;: стоїчне самовладання</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Принцип &#x27;облишити те, що не наше&#x27;: стоїчне самовладання · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/kohnityvne-spotvorennia-status-kvo-strakh-zmin.html" data-slot="micro_learning" data-title="Когнітивне спотворення &#x27;статус-кво&#x27;: страх змін" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Когнітивне спотворення &#x27;статус-кво&#x27;: страх змін</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Когнітивне спотворення &#x27;статус-кво&#x27;: страх змін · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/pidbyttia-pidsumku-zustrichi-anhliiska-to-recap-our-action-items.html" data-slot="language_phrase" data-title="Підбиття підсумку зустрічі: англійська — &#x27;To recap our action items…&#x27;" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Підбиття підсумку зустрічі: англійська — &#x27;To recap our action items…&#x27;</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Підбиття підсумку зустрічі: англійська — &#x27;To recap our action items…&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/liderstvo-cherez-pytannia-a-ne-nakazy.html" data-slot="leadership" data-title="Лідерство через питання, а не накази" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Лідерство через питання, а не накази</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Лідерство через питання, а не накази · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/iak-vesty-sebe-na-teatralnii-abo-opernii-vystavi.html" data-slot="etiquette" data-title="Як вести себе на театральній або оперній виставі" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Як вести себе на театральній або оперній виставі</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Як вести себе на театральній або оперній виставі · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-okean-solonyi-vyvitriuvannia-porid.html" data-slot="curiosity" data-title="Чому океан солоний (вивітрювання порід)" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому океан солоний (вивітрювання порід)</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Чому океан солоний (вивітрювання порід) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/symfonichnyi-orkestr-iaki-instrumenty-de-sydiat.html" data-slot="high_culture" data-title="Симфонічний оркестр: які інструменти де сидять" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Симфонічний оркестр: які інструменти де сидять</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Симфонічний оркестр: які інструменти де сидять · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/teodor-ruzvelt-doktryna-hovory-tykho-ale-trymai-velykyi-kyiok.html" data-slot="great_minds" data-title="Теодор Рузвельт: доктрина &#x27;говори тихо, але тримай великий кийок&#x27;" data-date="2026-07-18" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Теодор Рузвельт: доктрина &#x27;говори тихо, але тримай великий кийок&#x27;</span><span class="card-date">2026-07-18</span></div>
+<div class="card-desc">Теодор Рузвельт: доктрина &#x27;говори тихо, але тримай великий кийок&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/amor-fati-liubov-do-doli-iak-obiiniaty-te-shcho-ne-mozhna-zminyty.html" data-slot="morning_mindset" data-title="Амор фаті — любов до долі: як обійняти те, що не можна змінити" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Амор фаті — любов до долі: як обійняти те, що не можна змінити</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Амор фаті — любов до долі: як обійняти те, що не можна змінити · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-nebo-blakytne-efekt-rozsiiannia-releia.html" data-slot="micro_learning" data-title="Чому небо блакитне: ефект розсіяння Релея" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому небо блакитне: ефект розсіяння Релея</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Чому небо блакитне: ефект розсіяння Релея · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/dilova-zustrich-anhliiska-let-s-circle-back-on-this.html" data-slot="language_phrase" data-title="Ділова зустріч: англійська — &#x27;Let&#x27;s circle back on this&#x27;" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ділова зустріч: англійська — &#x27;Let&#x27;s circle back on this&#x27;</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Ділова зустріч: англійська — &#x27;Let&#x27;s circle back on this&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/metod-porozhnoho-stiltsia-dlia-rozuminnia-inshoi-storony.html" data-slot="leadership" data-title="Метод &#x27;порожнього стільця&#x27; для розуміння іншої сторони" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Метод &#x27;порожнього стільця&#x27; для розуміння іншої сторони</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Метод &#x27;порожнього стільця&#x27; для розуміння іншої сторони · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/serviruvannia-stolu-roztashuvannia-pryladiv-i-tarilok.html" data-slot="etiquette" data-title="Сервірування столу: розташування приладів і тарілок" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Сервірування столу: розташування приладів і тарілок</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Сервірування столу: розташування приладів і тарілок · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-kishky-maizhe-zavzhdy-pryzemliaiutsia-na-lapy-refleks-pravlennia.html" data-slot="curiosity" data-title="Чому кішки майже завжди приземляються на лапи (рефлекс правлення)" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому кішки майже завжди приземляються на лапи (рефлекс правлення)</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Чому кішки майже завжди приземляються на лапи (рефлекс правлення) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/iak-dehustuvaty-vyno-kolir-aromat-prysmak-pisliasmak.html" data-slot="high_culture" data-title="Як дегустувати вино: колір, аромат, присмак, післясмак" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Як дегустувати вино: колір, аромат, присмак, післясмак</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Як дегустувати вино: колір, аромат, присмак, післясмак · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/cherchyll-i-rishennia-1940-prodovzhuvaty-borotbu-popry-porazky.html" data-slot="great_minds" data-title="Черчилль і рішення 1940: продовжувати боротьбу попри поразки" data-date="2026-07-19" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Черчилль і рішення 1940: продовжувати боротьбу попри поразки</span><span class="card-date">2026-07-19</span></div>
+<div class="card-desc">Черчилль і рішення 1940: продовжувати боротьбу попри поразки · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/dykhotomiia-kontroliu-epikteta-shcho-u-tvoii-vladi-a-shcho-ni.html" data-slot="morning_mindset" data-title="Дихотомія контролю Епіктета: що у твоїй владі, а що ні" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Дихотомія контролю Епіктета: що у твоїй владі, а що ні</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Дихотомія контролю Епіктета: що у твоїй владі, а що ні · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/skladnyi-vidsotok-vosme-dyvo-svitu-alberta-einshteina.html" data-slot="micro_learning" data-title="Складний відсоток: восьме диво світу Альберта Ейнштейна" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Складний відсоток: восьме диво світу Альберта Ейнштейна</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Складний відсоток: восьме диво світу Альберта Ейнштейна · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/vybachennia-frantsuzka-je-vous-prie-de-m-excuser.html" data-slot="language_phrase" data-title="Вибачення: французька — &#x27;Je vous prie de m&#x27;excuser&#x27;" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Вибачення: французька — &#x27;Je vous prie de m&#x27;excuser&#x27;</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Вибачення: французька — &#x27;Je vous prie de m&#x27;excuser&#x27; · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/kryvi-zrostannia-komandy-koly-ne-vtruchatysia.html" data-slot="leadership" data-title="Криві зростання команди: коли не втручатися" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Криві зростання команди: коли не втручатися</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Криві зростання команди: коли не втручатися · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/rukostyskannia-syla-tryvalist-kontakt-ochei.html" data-slot="etiquette" data-title="Рукостискання: сила, тривалість, контакт очей" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Рукостискання: сила, тривалість, контакт очей</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Рукостискання: сила, тривалість, контакт очей · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/skilky-zirok-vydno-neozbroienym-okom-6000.html" data-slot="curiosity" data-title="Скільки зірок видно неозброєним оком (~6000)" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Скільки зірок видно неозброєним оком (~6000)</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Скільки зірок видно неозброєним оком (~6000) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/frantsuzka-materynska-kukhnia-cuisine-bourgeoise.html" data-slot="high_culture" data-title="Французька материнська кухня (cuisine bourgeoise)" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Французька материнська кухня (cuisine bourgeoise)</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Французька материнська кухня (cuisine bourgeoise) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/rishennia-baffeta-trymaty-kesh-pid-chas-rynkovoho-bumu.html" data-slot="great_minds" data-title="Рішення Баффета тримати кеш під час ринкового буму" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Рішення Баффета тримати кеш під час ринкового буму</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Рішення Баффета тримати кеш під час ринкового буму · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/brytva-okkama-chomu-naiprostishe-poiasnennia-chasto-pravylne.html" data-slot="morning_mindset" data-title="Бритва Оккама: чому найпростіше пояснення часто правильне" data-date="2026-07-21" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Бритва Оккама: чому найпростіше пояснення часто правильне</span><span class="card-date">2026-07-21</span></div>
+<div class="card-desc">Бритва Оккама: чому найпростіше пояснення часто правильне · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/efekt-metelyka-chutlyvist-do-pochatkovykh-umov.html" data-slot="micro_learning" data-title="Ефект метелика: чутливість до початкових умов" data-date="2026-07-21" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ефект метелика: чутливість до початкових умов</span><span class="card-date">2026-07-21</span></div>
+<div class="card-desc">Ефект метелика: чутливість до початкових умов · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-bakh-henialnyi-matematyka-i-struktura-v-muzytsi.html" data-slot="high_culture" data-title="Чому Бах геніальний: математика й структура в музиці" data-date="2026-07-21" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому Бах геніальний: математика й структура в музиці</span><span class="card-date">2026-07-21</span></div>
+<div class="card-desc">Чому Бах геніальний: математика й структура в музиці · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/efekt-danninha-kriuhera-chomu-nevihliasy-pereotsiniuiut-sebe.html" data-slot="morning_mindset" data-title="Ефект Даннінга-Крюгера: чому невігляси переоцінюють себе" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Ефект Даннінга-Крюгера: чому невігляси переоцінюють себе</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Ефект Даннінга-Крюгера: чому невігляси переоцінюють себе · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/latynski-krylati-vyslovy-dlia-promov-carpe-diem-veni-vidi-vici.html" data-slot="language_phrase" data-title="Латинські крилаті вислови для промов — Carpe diem, Veni vidi vici" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Латинські крилаті вислови для промов — Carpe diem, Veni vidi vici</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Латинські крилаті вислови для промов — Carpe diem, Veni vidi vici · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/pryntsyp-eizenkhauzerna-matrytsia-terminovosti-vazhlyvosti.html" data-slot="leadership" data-title="Принцип Ейзенхаузерна: матриця терміновості/важливості" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Принцип Ейзенхаузерна: матриця терміновості/важливості</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Принцип Ейзенхаузерна: матриця терміновості/важливості · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/dres-kod-black-tie-shcho-vdiahaty-na-ofitsiinu-vecheriu.html" data-slot="etiquette" data-title="Дрес-код black tie: що вдягати на офіційну вечерю" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Дрес-код black tie: що вдягати на офіційну вечерю</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Дрес-код black tie: що вдягати на офіційну вечерю · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/chomu-banany-slabko-radioaktyvni-izotop-kalii-40.html" data-slot="curiosity" data-title="Чому банани слабко радіоактивні (ізотоп калій-40)" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Чому банани слабко радіоактивні (ізотоп калій-40)</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Чому банани слабко радіоактивні (ізотоп калій-40) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/stiv-dzhobs-i-fokus-na-3-produktakh-skorochennia-liniiky.html" data-slot="great_minds" data-title="Стів Джобс і фокус на 3 продуктах (скорочення лінійки)" data-date="2026-07-22" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Стів Джобс і фокус на 3 продуктах (скорочення лінійки)</span><span class="card-date">2026-07-22</span></div>
+<div class="card-desc">Стів Джобс і фокус на 3 продуктах (скорочення лінійки) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a><a class="card" href="articles/doroslyi-za-versiieiu-dokumentiv-stendap.html" data-slot="editorial" data-title="Дорослий за версією документів (стендап)" data-date="2026-07-20" target="_blank" rel="noopener">
+<div class="card-head"><span class="card-title">Дорослий за версією документів (стендап)</span><span class="card-date">2026-07-20</span></div>
+<div class="card-desc">Дорослий за версією документів (стендап) · growth-coach</div>
+<div class="card-go">Відкрити →</div>
+</a>
+</div>
+<footer class="footer">Згенеровано Hermes Agent · автоматичний пайплайн публікації</footer>
+</div>
 </body>
 </html>
