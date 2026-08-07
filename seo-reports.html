@@ -3,46 +3,321 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>for-AI · SEO звіти</title>
+<title>for-AI · SEO звіти для C-suite</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-:root { --bg:#0d1117; --card:#161b22; --border:#30363d; --fg:#e6edf3; --muted:#8b949e; --accent:#58a6ff; }
-body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif; margin:0; padding:24px; }
-.wrap { max-width:980px; margin:0 auto; }
-header { margin-bottom:18px; }
-h1 { font-size:1.6rem; margin:0 0 6px; }
+:root {
+  --bg:#0d1117; --card:#161b22; --border:#30363d; --fg:#e6edf3; --muted:#8b949e;
+  --accent:#58a6ff; --accent2:#a371f7; --green:#3fb950; --red:#f85149; --yellow:#d29922;
+  --radius:12px; --shadow:0 8px 24px rgba(0,0,0,.3);
+}
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif; margin:0; padding:24px; line-height:1.6; }
+.wrap { max-width:1400px; margin:0 auto; }
+header { margin-bottom:24px; text-align:center; }
+h1 { font-size:1.8rem; margin:0 0 8px; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 .sub { color:var(--muted); font-size:.95rem; }
-.stack { display:flex; flex-direction:column; gap:18px; }
-.card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
-.role { font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin-bottom:6px; }
-.date { font-size:.75rem; color:var(--muted); margin-bottom:10px; }
-.body { font-size:14px; line-height:1.55; }
-.tablewrap { overflow-x:auto; margin:8px 0 12px; }
-.body table { width:100%; border-collapse:collapse; background:#0d1117; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-.body th, .body td { text-align:left; padding:7px 10px; font-size:12px; border-bottom:1px solid #1e2836; white-space:nowrap; }
-.body th { color:#8b949e; text-transform:uppercase; font-size:11px; background:#11161d; }
-.body tr:last-child td { border-bottom:none; }
-.section { margin:10px 0 14px; }
-.section-title { font-size:13px; font-weight:650; color:#c3ccd6; margin-bottom:6px; }
-.block { margin:10px 0 12px; }
-.block-title { font-size:12px; font-weight:700; color:#58a6ff; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-.meta { font-size:12px; color:#8b949e; margin-bottom:8px; }
-.empty { color:var(--muted); font-size:13px; }
-.back { display:inline-block; margin-top:18px; color:var(--accent); text-decoration:none; font-size:14px; }
-footer { text-align:center; color:#5c6b7a; font-size:12px; margin-top:26px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:24px; }
+.kpi-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); transition:transform .2s,box-shadow .2s; }
+.kpi-card:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,.4); }
+.kpi-icon { font-size:1.5rem; margin-bottom:8px; display:block; }
+.kpi-label { font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; }
+.kpi-value { font-size:1.4rem; font-weight:600; color:var(--fg); }
+.kpi-trend { font-size:.75rem; margin-top:4px; }
+.trend-up { color:var(--green); } .trend-down { color:var(--red); } .trend-neutral { color:var(--muted); }
+
+.section { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px; box-shadow:var(--shadow); }
+.section h2 { margin:0 0 16px; font-size:1.2rem; display:flex; align-items:center; gap:8px; }
+.charts-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:20px; margin-bottom:20px; }
+.chart-container { background:#0d1117; border:1px solid var(--border); border-radius:10px; padding:16px; min-height:300px; }
+.chart-container.large { min-height:450px; grid-column:1/-1; }
+.tablewrap { overflow-x:auto; margin:16px 0; }
+table { width:100%; border-collapse:collapse; font-size:.85rem; }
+th, td { text-align:left; padding:10px 12px; border-bottom:1px solid #1e2836; white-space:nowrap; }
+th { color:var(--muted); text-transform:uppercase; font-size:.7rem; background:#11161d; font-weight:600; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#11161d; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+.empty { color:var(--muted); padding:24px; text-align:center; }
+details { margin-top:12px; }
+summary { cursor:pointer; color:var(--accent); font-weight:500; }
+footer { text-align:center; color:#5c6b7a; font-size:.8rem; margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }
+.badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:.7rem; font-weight:600; text-transform:uppercase; }
+.badge-active { background:rgba(63,185,80,.2); color:var(--green); }
+.badge-warn { background:rgba(248,81,73,.2); color:var(--red); }
+.badge-info { background:rgba(88,166,255,.2); color:var(--accent); }
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>SEO Pipeline — звіти для C-suite</h1>
-  <div class="sub">Згенеровано: 2026-08-07 13:19</div>
+  <h1>SEO Pipeline — Звіти для C-suite</h1>
+  <div class="sub">Оновлено: 2026-08-07 13:59 | Джерела: ProZorro API, Google Trends, Work.ua, Internal CRM/GA/Ads</div>
 </header>
-<div class="stack">
-  <div class="card"><div class="role">Генеральний директор</div><div class="date">2026-08-07 13:19</div><div class="body"><div class='section'><div class='section-title'>Топ можливості</div><div class='tablewrap'><table><thead><tr><th>original_query</th><th>query</th><th>product</th><th>region</th><th>volume</th><th>date</th><th>source</th><th>url</th><th>title</th></tr></thead><tbody><tr><td>Постачання трансформаторної підстанції 630 кВА</td><td>постачання трансформаторної підстанції 630 ква</td><td>підстанції</td><td>львів</td><td>850000</td><td>2024-01-15</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-001</td><td>Постачання трансформаторної підстанції 630 кВА</td></tr><tr><td>Реконструкція електропідстанції 10 кВ</td><td>реконструкція електропідстанції 10 кв</td><td>підстанції</td><td>київ</td><td>4200000</td><td>2024-02-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-045</td><td>Реконструкція електропідстанції 10 кВ</td></tr><tr><td>Тендер на виготовлення КСО-290</td><td>тендер на виготовлення ксо-290</td><td>ксо-290</td><td>дніпро</td><td>1200000</td><td>2024-03-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-089</td><td>Тендер на виготовлення КСО-290</td></tr><tr><td>Постачання розрядника ОПН-10</td><td>постачання розрядника опн-10</td><td>розрядник</td><td>черкаси</td><td>340000</td><td>2024-03-10</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-112</td><td>Постачання розрядника ОПН-10</td></tr><tr><td>Монтаж трансформатора ТМ-1000</td><td>монтаж трансформатора тм-1000</td><td>тм-1000</td><td>харків</td><td>2100000</td><td>2024-04-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-156</td><td>Монтаж трансформатора ТМ-1000</td></tr><tr><td>Комплект НАПС 10 кВ для підстанції</td><td>комплект напс 10 кв для підстанції</td><td>напс</td><td>київ</td><td>560000</td><td>2024-05-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-201</td><td>Комплект НАПС 10 кВ для підстанції</td></tr><tr><td>Виготовлення щитів НТМ</td><td>виготовлення щитів нтм</td><td>tender</td><td>львів</td><td>780000</td><td>2024-06-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-278</td><td>Виготовлення щитів НТМ</td></tr><tr><td>Кабельні лінії 10 кВ для ПС 110/10 кВ</td><td>кабельні лінії 10 кв для пс 110/10 кв</td><td>tender</td><td>одеса</td><td>3200000</td><td>2024-07-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-315</td><td>Кабельні лінії 10 кВ для ПС 110/10 кВ</td></tr><tr><td>Реконструкція ПС 35/10 кВ Центральна</td><td>реконструкція пс 35/10 кв центральна</td><td>ру</td><td>вінниця</td><td>1800000</td><td>2024-08-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-402</td><td>Реконструкція ПС 35/10 кВ Центральна</td></tr><tr><td>Постачання трансформатора ТРДЦН-25000/110</td><td>постачання трансформатора трдцн-25000/110</td><td>трдцн</td><td>харків</td><td>8900000</td><td>2024-09-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-501</td><td>Постачання трансформатора ТРДЦН-25000/110</td></tr><tr><td>Постачання трансформаторної підстанції</td><td>постачання трансформаторної підстанції</td><td>підстанції</td><td></td><td>850000</td><td>2024-01-15</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-001</td><td>Постачання трансформаторної підстанції</td></tr><tr><td>Реконструкція електропідстанції</td><td>реконструкція електропідстанції</td><td>підстанції</td><td></td><td>4200000</td><td>2024-02-01</td><td>tenders</td><td>https://prozorro.gov.ua/tender/UA-2024-002</td><td>Реконструкція електропідстанції</td></tr><tr><td>Тендер на виготовлення КСО-290</td><td>тендер на виготовлення ксо-290</td><td>ксо-290</td><td></td><td>1200000</td><td>2024-03-01</td><td>tenders</td><td>https://tenders.dia.gov.ua/tender/DIA-2024-017</td><td>Тендер на виготовлення КСО-290</td></tr><tr><td>Послуги грейдера на території Лука-Мелешківської ТГ</td><td>послуги грейдера на території лука-мелешківської тг</td><td>прокат обладнання з оператором для виконання земляних робіт</td><td>вінницька область</td><td>99200</td><td>2026-08-07T13:19:19.104222</td><td>tenders</td><td>https://prozorro.gov.ua/tender/8065ba55704c463bb2772f2468ad013b</td><td>Послуги грейдера на території Лука-Мелешківської ТГ</td></tr><tr><td>Шолом кулезахисний 1-го класу</td><td>шолом кулезахисний 1-го класу</td><td>військові шоломи</td><td>хмельницька область</td><td>4009500</td><td>2026-08-13T10:00:00+03:00</td><td>tenders</td><td>https://prozorro.gov.ua/tender/1ed694d1b7df4f4a9c8738cf1236ecdd</td><td>Шолом кулезахисний 1-го класу</td></tr><tr><td>15130000-8 - М’ясопродукти (фарш, 15131130-5 - Ковбаси)</td><td>15130000-8 - м ясопродукти фарш 15131130-5 - ковбаси</td><td>м ясопродукти</td><td>миколаївська область</td><td>2293</td><td>2026-08-07T13:19:19.104589</td><td>tenders</td><td>https://prozorro.gov.ua/tender/144001195bb246fdb7d764056c9f7707</td><td>15130000-8 - М’ясопродукти (фарш, 15131130-5 - Ковбаси)</td></tr><tr><td>ДК 021:2015: 39830000-9 Продукція для чищення (Відбілювач білизна, засіб для миття посуду).	</td><td>дк 021 2015 39830000-9 продукція для чищення відбілювач білизна засіб для миття посуду</td><td>продукція для чищення</td><td>миколаївська область</td><td>4062</td><td>2026-08-07T13:19:19.104775</td><td>tenders</td><td>https://prozorro.gov.ua/tender/b74f3adfc93c4cba9dc0347e4ee46931</td><td>ДК 021:2015: 39830000-9 Продукція для чищення (Відбілювач білизна, засіб для миття посуду).	</td></tr><tr><td>Фільтр паливний, фільтр оливи, елемент фільтра паливного, фільтр паливної грубої чистки в зборі, фільтр повітряний</td><td>фільтр паливний фільтр оливи елемент фільтра паливного фільтр паливної грубої чистки в зборі фільтр повітряний</td><td>ру</td><td>миколаївська область</td><td>4756</td><td>2026-08-07T13:19:19.105036</td><td>tenders</td><td>https://prozorro.gov.ua/tender/8ed9035ebd774caab43e5f845abb9c3f</td><td>Фільтр паливний, фільтр оливи, елемент фільтра паливного, фільтр паливної грубої чистки в зборі, фільтр повітряний</td></tr><tr><td>Лотки та комплектуючі для прокладання мереж</td><td>лотки та комплектуючі для прокладання мереж</td><td>кабелі та супутня продукція</td><td>львівська область</td><td>47800</td><td>2026-07-24T14:46:22.817718+03:00</td><td>tenders</td><td>https://prozorro.gov.ua/tender/25171631cdc24de5b1efe15b10548f4d</td><td>Лотки та комплектуючі для прокладання мереж</td></tr><tr><td>Альтеплаза ліофілізат для розчину для інфузій по 50 мг флакон  (ДК 021: 2015 33600000-6 Фармацевтична продукція)  ( МНН: Alteplase (Альтеплаза))</td><td>альтеплаза ліофілізат для розчину для інфузій по 50 мг флакон дк 021 2015 33600000-6 фармацевтична продукція мнн alteplase альтеплаза</td><td>лікарські засоби для лікування захворювань крові органів кровотворення та захворювань серцево-судинної системи</td><td>київська область</td><td>4183920</td><td>2026-08-07T15:44:53.335312+03:00</td><td>tenders</td><td>https://prozorro.gov.ua/tender/32c0be41c0384433a6998c68739a242b</td><td>Альтеплаза ліофілізат для розчину для інфузій по 50 мг флакон  (ДК 021: 2015 33600000-6 Фармацевтична продукція)  ( МНН: Alteplase (Альтеплаза))</td></tr></tbody></table></div></div><div class='section'><div class='section-title'>Топ загрози</div><div class='tablewrap'><table><thead><tr><th>original_query</th><th>query</th><th>product</th><th>region</th><th>volume</th><th>date</th><th>source</th><th>url</th><th>title</th></tr></thead><tbody><tr><td>Трансформаторні підстанції — ТрансЕнергоСервіс</td><td>трансформаторні підстанції трансенергосервіс</td><td>тм-630</td><td>львів</td><td>624989</td><td>2026-08-07T13:19:19.016722</td><td>competitors</td><td>https://трансенергосервіс.ua</td><td>Трансформаторні підстанції — ТрансЕнергоСервіс</td></tr><tr><td>Трансформаторні підстанції — ЕнергоТрансформатор</td><td>трансформаторні підстанції енерготрансформатор</td><td>тм-630</td><td>дніпро</td><td>596251</td><td>2026-08-07T13:19:19.016905</td><td>competitors</td><td>https://енерготрансформатор.ua</td><td>Трансформаторні підстанції — ЕнергоТрансформатор</td></tr><tr><td>Трансформаторні підстанції — ПідстанціяБуд</td><td>трансформаторні підстанції підстанціябуд</td><td>тм-630</td><td>дніпро</td><td>566777</td><td>2026-08-07T13:19:19.017018</td><td>competitors</td><td>https://підстанціябуд.ua</td><td>Трансформаторні підстанції — ПідстанціяБуд</td></tr><tr><td>Трансформаторні підстанції — КиївТрансформатор</td><td>трансформаторні підстанції київтрансформатор</td><td>тм-630</td><td>дніпро</td><td>586724</td><td>2026-08-07T13:19:19.017092</td><td>competitors</td><td>https://київтрансформатор.ua</td><td>Трансформаторні підстанції — КиївТрансформатор</td></tr><tr><td>Трансформаторні підстанції — УкрЕнергоСпец</td><td>трансформаторні підстанції укренергоспец</td><td>тм-630</td><td>харків</td><td>583089</td><td>2026-08-07T13:19:19.017146</td><td>competitors</td><td>https://укренергоспец.ua</td><td>Трансформаторні підстанції — УкрЕнергоСпец</td></tr></tbody></table></div></div></div></div><div class="card"><div class="role">СЕО</div><div class="date">2026-08-07 13:19</div><div class="body"><div class='section'><div class='section-title'>Окупність каналів</div><div class='tablewrap'><table><thead><tr><th>product</th><th>volume</th><th>date</th><th>source</th></tr></thead><tbody><tr><td>internal metric</td><td>4200</td><td>2026-07-01</td><td>internal_metrics</td></tr><tr><td>внутрішня метрика</td><td>4200</td><td>2024-03-01</td><td>internal_metrics</td></tr></tbody></table></div></div><div class='section'><div class='section-title'>Прогноз</div><div class='meta'>Згенеровано: 2026-08-07T13:19:19.278297 · Джерело: forecast_20260807.json · Записів: 3048</div><div class='block'><div class='block-title'>тм-630</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>тм-630</td><td>львів</td><td>unknown</td><td>624989.0</td></tr><tr><td>тм-630</td><td>дніпро</td><td>unknown</td><td>596251.0</td></tr><tr><td>тм-630</td><td>дніпро</td><td>unknown</td><td>566777.0</td></tr><tr><td>тм-630</td><td>дніпро</td><td>unknown</td><td>586724.0</td></tr><tr><td>тм-630</td><td>харків</td><td>unknown</td><td>583089.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>підстанція</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>підстанція</td><td>україна</td><td>unknown</td><td>3200.0</td></tr><tr><td>підстанція</td><td>україна</td><td>unknown</td><td>410.0</td></tr><tr><td>підстанція</td><td></td><td>unknown</td><td>3200.0</td></tr><tr><td>підстанція</td><td></td><td>middle</td><td>1500.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>трансформатор</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>трансформатор</td><td>україна</td><td>middle</td><td>1500.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>підстанції</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>підстанції</td><td>україна</td><td>unknown</td><td>980.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>ксо-290</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>ксо-290</td><td>україна</td><td>unknown</td><td>620.0</td></tr><tr><td>ксо-290</td><td></td><td>unknown</td><td>980.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>прокат обладнання з оператором для виконання земляних робіт</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>прокат обладнання з оператором для виконання земляних робіт</td><td>вінницька область</td><td>unknown</td><td>99200.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>м ясопродукти</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>м ясопродукти</td><td>миколаївська область</td><td>unknown</td><td>2293.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>продукція для чищення</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>продукція для чищення</td><td>миколаївська область</td><td>unknown</td><td>4062.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>ру</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>ру</td><td>миколаївська область</td><td>unknown</td><td>4756.0</td></tr><tr><td>ру</td><td>миколаївська область</td><td>top</td><td>14990.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>інші завершальні будівельні роботи</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>інші завершальні будівельні роботи</td><td>івано-франківська область</td><td>unknown</td><td>1230516.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>знаряддя замки ключі петлі кріпильні деталі ланцюги та пружини</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>знаряддя замки ключі петлі кріпильні деталі ланцюги та пружини</td><td>полтавська область</td><td>unknown</td><td>31299.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>кріпильні деталі</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>кріпильні деталі</td><td>львівська область</td><td>unknown</td><td>1062.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>пряжа та текстильні нитки з натуральних волокон</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>пряжа та текстильні нитки з натуральних волокон</td><td>київська область</td><td>unknown</td><td>132.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>послуги пов язані з базами даних</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>послуги пов язані з базами даних</td><td>одеська область</td><td>unknown</td><td>24000.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>послуги з ремонту і технічного обслуговування техніки</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>послуги з ремонту і технічного обслуговування техніки</td><td>сумська область</td><td>unknown</td><td>4408.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>послуги з інженерного проектування</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>послуги з інженерного проектування</td><td>харківська область</td><td>unknown</td><td>29978.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>ктп</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>ктп</td><td>закарпатська область</td><td>unknown</td><td>12012.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>послуги з юридичного консультування та юридичного представництва</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>послуги з юридичного консультування та юридичного представництва</td><td>івано-франківська область</td><td>unknown</td><td>5600.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>електромонтажні роботи</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>електромонтажні роботи</td><td>кіровоградська область</td><td>unknown</td><td>99919.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>хлібопродукти</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>хлібопродукти</td><td>волинська область</td><td>unknown</td><td>18194.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>пакети програмного забезпечення для створення документів</div><div class='tablewrap'><table><thead><tr><th>product</th><th>region</th><th>funnel</th><th>volume</th></tr></thead><tbody><tr><td>пакети програмного забезпечення для створення документів</td><td>київська область</td><td>unknown</td><td>122688.0</td></tr></tbody></table></div></div><div class='block'><div class='block-title'>Прогноз</div><div class='tablewrap'><table><thead><tr><th>date</th><th>product</th><th>region</th><th>funnel</th><th>horizon_days</th><th>volume_forecast</th><th>method</th></tr></thead><tbody><tr><td>2026-08-08</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>629988.91</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-09</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>643113.68</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-10</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>689050.37</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-11</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>702831.38</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-12</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>716612.39</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-13</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>730393.39</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-14</td><td>тм-630</td><td>львів</td><td>unknown</td><td>7</td><td>647707.35</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-08</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>583115.06</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-09</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>595263.29</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-10</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>637782.1</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-11</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>650537.74</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-12</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>663293.39</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-13</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>676049.03</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-14</td><td>тм-630</td><td>дніпро</td><td>unknown</td><td>7</td><td>599515.18</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-08</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>587753.71</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-09</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>599998.58</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-10</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>642855.62</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-11</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>655712.73</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-12</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>668569.85</td><td>baseline_seasonal_trend</td></tr><tr><td>2026-08-13</td><td>тм-630</td><td>харків</td><td>unknown</td><td>7</td><td>681426.96</td><td>baseline_seasonal_trend</td></tr></tbody></table></div></div></div></div></div><div class="card"><div class="role">Фінансовий директор</div><div class="date">2026-08-07 13:19</div><div class="body"><div class='section'><div class='section-title'>Вартість лідів</div><div class='tablewrap'><table><thead><tr><th>product</th><th>volume</th><th>date</th><th>source</th></tr></thead><tbody><tr><td>internal metric</td><td>4200</td><td>2026-07-01</td><td>internal_metrics</td></tr><tr><td>внутрішня метрика</td><td>4200</td><td>2024-03-01</td><td>internal_metrics</td></tr></tbody></table></div></div><div class='section'><div class='section-title'>Корективи бюджету</div><div class='tablewrap'><table><thead><tr><th>original_query</th><th>query</th><th>product</th><th>region</th><th>volume</th><th>date</th><th>source</th><th>title</th><th>trend_direction</th></tr></thead><tbody><tr><td>трансформаторна підстанція</td><td>трансформаторна підстанція</td><td>підстанція</td><td>україна</td><td>3200</td><td>2026-08-07T13:19:19.067646</td><td>search_trends</td><td>трансформаторна підстанція</td><td>up</td></tr><tr><td>купити трансформаторну підстанцію</td><td>купити трансформаторну підстанцію</td><td>трансформатор</td><td>україна</td><td>1500</td><td>2026-08-07T13:19:19.067795</td><td>search_trends</td><td>купити трансформаторну підстанцію</td><td>up</td></tr><tr><td>ремонт трансформаторної підстанції</td><td>ремонт трансформаторної підстанції</td><td>підстанції</td><td>україна</td><td>980</td><td>2026-08-07T13:19:19.067903</td><td>search_trends</td><td>ремонт трансформаторної підстанції</td><td>down</td></tr><tr><td>КСО-290</td><td>ксо-290</td><td>ксо-290</td><td>україна</td><td>620</td><td>2026-08-07T13:19:19.068028</td><td>search_trends</td><td>КСО-290</td><td>up</td></tr><tr><td>електропідстанція 10 кВ</td><td>електропідстанція 10 кв</td><td>підстанція</td><td>україна</td><td>410</td><td>2026-08-07T13:19:19.068120</td><td>search_trends</td><td>електропідстанція 10 кВ</td><td>down</td></tr><tr><td>трансформаторна підстанція</td><td>трансформаторна підстанція</td><td>підстанція</td><td></td><td>3200</td><td>2026-08-07T13:19:19.068288</td><td>search_trends</td><td>трансформаторна підстанція</td><td>up</td></tr><tr><td>КСО-290</td><td>ксо-290</td><td>ксо-290</td><td></td><td>980</td><td>2026-08-07T13:19:19.068385</td><td>search_trends</td><td>КСО-290</td><td>stable</td></tr><tr><td>трансформаторна підстанція купити</td><td>трансформаторна підстанція купити</td><td>підстанція</td><td></td><td>1500</td><td>2026-08-07T13:19:19.068493</td><td>search_trends</td><td>трансформаторна підстанція купити</td><td>up</td></tr></tbody></table></div></div></div></div><div class="card"><div class="role">HR директор</div><div class="date">2026-08-07 13:19</div><div class="body"><div class='section'><div class='section-title'>Дефіцит компетенцій</div><div class='tablewrap'><table><thead><tr><th>original_query</th><th>query</th><th>product</th><th>region</th><th>volume</th><th>date</th><th>source</th><th>url</th><th>title</th></tr></thead><tbody><tr><td>Інженер-конструктор трансформаторних підстанцій</td><td>інженер-конструктор трансформаторних підстанцій</td><td>трансформатор</td><td>київ</td><td>35000</td><td>2024-03-01</td><td>labor_market</td><td>https://work.ua/jobs/1234567</td><td>Інженер-конструктор трансформаторних підстанцій</td></tr><tr><td>SEO спеціаліст (B2B, промисловість)</td><td>seo спеціаліст b2b промисловість</td><td>job</td><td>київ</td><td>28000</td><td>2024-03-05</td><td>labor_market</td><td>https://work.ua/jobs/1234570</td><td>SEO спеціаліст (B2B, промисловість)</td></tr><tr><td>Технічний SEO / Data Analyst</td><td>технічний seo / data analyst</td><td>job</td><td>львів</td><td>35000</td><td>2024-03-08</td><td>labor_market</td><td>https://work.ua/jobs/1234588</td><td>Технічний SEO / Data Analyst</td></tr><tr><td>Контент менеджер (німецька)</td><td>контент менеджер німецька</td><td>job</td><td>remote</td><td>20000</td><td>2024-03-10</td><td>labor_market</td><td>https://work.ua/jobs/1234595</td><td>Контент менеджер (німецька)</td></tr><tr><td>Спеціаліст з маркетингових комунікацій</td><td>спеціаліст з маркетингових комунікацій</td><td>job</td><td>харків</td><td>25000</td><td>2024-03-12</td><td>labor_market</td><td>https://work.ua/jobs/1234601</td><td>Спеціаліст з маркетингових комунікацій</td></tr><tr><td>Frontend Developer</td><td>frontend developer</td><td>job</td><td>удалено</td><td>50000</td><td>2024-03-05</td><td>labor_market</td><td>https://jobs.dou.ua/companies/seo-pipeline/vacancies/987654/</td><td>Frontend Developer</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>regional sales manager power equipment</td><td>job</td><td>kyiv</td><td>0</td><td>2024-03-10</td><td>labor_market</td><td>https://linkedin.com/jobs/view/1234567890/</td><td>Regional Sales Manager — Power Equipment</td></tr><tr><td>Frontend Developer</td><td>frontend developer</td><td>вакансія</td><td>удалено</td><td>50000</td><td>2024-03-05</td><td>labor_market</td><td>https://jobs.dou.ua/companies/seo-pipeline/vacancies/987654/</td><td>Frontend Developer</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>regional sales manager power equipment</td><td>вакансія</td><td>kyiv</td><td>0</td><td>2024-03-10</td><td>labor_market</td><td>https://linkedin.com/jobs/view/1234567890/</td><td>Regional Sales Manager — Power Equipment</td></tr></tbody></table></div></div><div class='section'><div class='section-title'>Потреби в персоналі</div><div class='tablewrap'><table><thead><tr><th>original_query</th><th>query</th><th>product</th><th>region</th><th>volume</th><th>date</th><th>source</th><th>url</th><th>title</th></tr></thead><tbody><tr><td>Інженер-конструктор трансформаторних підстанцій</td><td>інженер-конструктор трансформаторних підстанцій</td><td>трансформатор</td><td>київ</td><td>35000</td><td>2024-03-01</td><td>labor_market</td><td>https://work.ua/jobs/1234567</td><td>Інженер-конструктор трансформаторних підстанцій</td></tr><tr><td>SEO спеціаліст (B2B, промисловість)</td><td>seo спеціаліст b2b промисловість</td><td>job</td><td>київ</td><td>28000</td><td>2024-03-05</td><td>labor_market</td><td>https://work.ua/jobs/1234570</td><td>SEO спеціаліст (B2B, промисловість)</td></tr><tr><td>Технічний SEO / Data Analyst</td><td>технічний seo / data analyst</td><td>job</td><td>львів</td><td>35000</td><td>2024-03-08</td><td>labor_market</td><td>https://work.ua/jobs/1234588</td><td>Технічний SEO / Data Analyst</td></tr><tr><td>Контент менеджер (німецька)</td><td>контент менеджер німецька</td><td>job</td><td>remote</td><td>20000</td><td>2024-03-10</td><td>labor_market</td><td>https://work.ua/jobs/1234595</td><td>Контент менеджер (німецька)</td></tr><tr><td>Спеціаліст з маркетингових комунікацій</td><td>спеціаліст з маркетингових комунікацій</td><td>job</td><td>харків</td><td>25000</td><td>2024-03-12</td><td>labor_market</td><td>https://work.ua/jobs/1234601</td><td>Спеціаліст з маркетингових комунікацій</td></tr><tr><td>Frontend Developer</td><td>frontend developer</td><td>job</td><td>удалено</td><td>50000</td><td>2024-03-05</td><td>labor_market</td><td>https://jobs.dou.ua/companies/seo-pipeline/vacancies/987654/</td><td>Frontend Developer</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>regional sales manager power equipment</td><td>job</td><td>kyiv</td><td>0</td><td>2024-03-10</td><td>labor_market</td><td>https://linkedin.com/jobs/view/1234567890/</td><td>Regional Sales Manager — Power Equipment</td></tr><tr><td>Frontend Developer</td><td>frontend developer</td><td>вакансія</td><td>удалено</td><td>50000</td><td>2024-03-05</td><td>labor_market</td><td>https://jobs.dou.ua/companies/seo-pipeline/vacancies/987654/</td><td>Frontend Developer</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>regional sales manager power equipment</td><td>вакансія</td><td>kyiv</td><td>0</td><td>2024-03-10</td><td>labor_market</td><td>https://linkedin.com/jobs/view/1234567890/</td><td>Regional Sales Manager — Power Equipment</td></tr></tbody></table></div></div></div></div>
+
+<div class="kpi-grid">
+  
+  <div class="kpi-card">
+    <span class="kpi-icon">💰</span>
+    <div class="kpi-label">Загальна сума тендерів</div>
+    <div class="kpi-value">258 722 827 ₴</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">📋</span>
+    <div class="kpi-label">Активних тендерів</div>
+    <div class="kpi-value">0</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">📊</span>
+    <div class="kpi-label">Середній чек тендеру</div>
+    <div class="kpi-value">4 241 357 ₴</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">🎯</span>
+    <div class="kpi-label">Обсяг конкурентів</div>
+    <div class="kpi-value">2 957 830 ₴</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">📈</span>
+    <div class="kpi-label">Внутрішній ревेनю</div>
+    <div class="kpi-value">8 400 ₴</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">🔍</span>
+    <div class="kpi-label">Пошуковий обсяг</div>
+    <div class="kpi-value">12 390</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">🔮</span>
+    <div class="kpi-label">Прогнозних точок</div>
+    <div class="kpi-value">3 048</div>
+    
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-icon">👥</span>
+    <div class="kpi-label">HR бюджет (зарплати)</div>
+    <div class="kpi-value">243 000 ₴</div>
+    
+  </div>
 </div>
-<a class="back" href="index.html">← Назад на головну</a>
-<footer>for-AI · SEO Pipeline</footer>
+
+<div class="role-tabs" style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+  <button class="tab-btn active" data-tab="gd" style="background:var(--card); border:1px solid var(--border); color:var(--fg); padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500;">👑 Генеральний директор</button>
+  <button class="tab-btn" data-tab="ceo" style="background:var(--card); border:1px solid var(--border); color:var(--fg); padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500;">🎯 СЕО</button>
+  <button class="tab-btn" data-tab="fd" style="background:var(--card); border:1px solid var(--border); color:var(--fg); padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500;">💰 Фінансовий директор</button>
+  <button class="tab-btn" data-tab="hr" style="background:var(--card); border:1px solid var(--border); color:var(--fg); padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:500;">👥 HR директор</button>
 </div>
+
+<div id="tab-gd" class="tab-content">
+    <section class="section">
+        <h2>📋 Топ можливості (тендери)</h2>
+        <div class="charts-row">
+            <div class="chart-container">
+                <canvas id="chartTendersProducts"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chartRegions"></canvas>
+            </div>
+        </div>
+        <div class='tablewrap'><table><thead><tr><th>Тендер</th><th>Бюджет</th><th>Регіон</th><th>Продукт</th><th>Статус</th><th>Дата</th></tr></thead><tbody><tr><td>Трубні дошки: лот 1 - 44210000-5 Конструкції та їх частини (трубні дошки), лот 2 - 44210000-5 Конструкції та їх частини (трубні дошки), лот 3 - 44210000-5 Конструкції та їх частини (трубні дошки)</td><td>102 060 480 ₴</td><td>київська область</td><td>ру</td><td></td><td>2026-08-07</td></tr><tr><td>ДК 021-2015 за кодом Єдиного закупівельного словника (CPV) 34110000-1 ‒ Легкові автомобілі (мікроавтобуси пасажиромісткістю 7-8 місць)</td><td>64 721 666 ₴</td><td>київська область</td><td>мікроавтобуси</td><td></td><td>2026-07-31</td></tr><tr><td>Послуги з обов’язкового страхування цивільно-правової відповідальності власників наземних транспортних засобів</td><td>10 636 008 ₴</td><td>київська область</td><td>послуги зі страхування цивільної відповідальності власників автомобільного транспорту</td><td></td><td>2026-08-04</td></tr><tr><td>Постачання трансформатора ТРДЦН-25000/110</td><td>8 900 000 ₴</td><td>харків</td><td>трдцн</td><td></td><td>2024-09-01</td></tr><tr><td>Капітальний ремонт системи теплопостачання житлового будинку ОСББ "Київ-10" за адресою: вулиця Оноре де Бальзака, 8-В в Деснянському районі м. Києва (код ДК 021:2015: 45453000-7 – Капітальний ремонт і реставрація)</td><td>6 559 734 ₴</td><td>київська область</td><td>капітальний ремонт і реставрація</td><td></td><td>2026-07-22</td></tr><tr><td>Комплексні інженерні послуги за кодом ДК 021:2015 - 71340000-3)
+«послуги з розроблення технічної документації із землеустрою щодо інвентаризації земель комунальної власності м. Одеси
+</td><td>6 423 231 ₴</td><td>одеська область</td><td>комплексні інженерні послуги</td><td></td><td>2026-08-04</td></tr><tr><td>Система накопичення та зберігання електричної енергії,
+за кодом ДК 021:2015 – 31150000-2 «Баласти для розрядних
+ ламп чи трубок»</td><td>6 366 666 ₴</td><td>одеська область</td><td>ру</td><td></td><td>2026-07-22</td></tr><tr><td>Реконструкція електропідстанції 10 кВ</td><td>4 200 000 ₴</td><td>київ</td><td>підстанції</td><td></td><td>2024-02-01</td></tr><tr><td>Реконструкція електропідстанції</td><td>4 200 000 ₴</td><td></td><td>підстанції</td><td></td><td>2024-02-01</td></tr><tr><td>Альтеплаза ліофілізат для розчину для інфузій по 50 мг флакон  (ДК 021: 2015 33600000-6 Фармацевтична продукція)  ( МНН: Alteplase (Альтеплаза))</td><td>4 183 920 ₴</td><td>київська область</td><td>лікарські засоби для лікування захворювань крові органів кровотворення та захворювань серцево-судинної системи</td><td></td><td>2026-08-07</td></tr></tbody></table></div>
+    </section>
+
+    <section class="section">
+        <h2>⚠️ Топ загрози (конкуренти)</h2>
+        <div class='tablewrap'><table><thead><tr><th>Конкурент</th><th>Продукт</th><th>Регіон</th><th>Обсяг</th><th></th></tr></thead><tbody><tr><td>ТрансЕнергоСервіс</td><td>тм-630</td><td>львів</td><td>624 989 ₴</td><td></td></tr><tr><td>ЕнергоТрансформатор</td><td>тм-630</td><td>дніпро</td><td>596 251 ₴</td><td></td></tr><tr><td>КиївТрансформатор</td><td>тм-630</td><td>дніпро</td><td>586 724 ₴</td><td></td></tr><tr><td>УкрЕнергоСпец</td><td>тм-630</td><td>харків</td><td>583 089 ₴</td><td></td></tr><tr><td>ПідстанціяБуд</td><td>тм-630</td><td>дніпро</td><td>566 777 ₴</td><td></td></tr></tbody></table></div>
+    </section>
+    </div>
+<div id="tab-ceo" class="tab-content" style="display:none;">
+    <section class="section">
+        <h2>💰 Окупність каналів / Фінанси</h2>
+        <div class='empty'>Немає даних</div>
+    </section>
+
+    <section class="section">
+        <h2>🔍 Пошуковий попит</h2>
+        <div class='tablewrap'><table><thead><tr><th>Запит</th><th>Обсяг</th><th>Тренд</th><th>Період</th></tr></thead><tbody><tr><td>трансформаторна підстанція</td><td>3 200</td><td>up</td><td></td></tr><tr><td>трансформаторна підстанція</td><td>3 200</td><td>up</td><td></td></tr><tr><td>купити трансформаторну підстанцію</td><td>1 500</td><td>up</td><td></td></tr><tr><td>трансформаторна підстанція купити</td><td>1 500</td><td>up</td><td></td></tr><tr><td>ремонт трансформаторної підстанції</td><td>980</td><td>down</td><td></td></tr><tr><td>ксо-290</td><td>980</td><td>stable</td><td></td></tr><tr><td>ксо-290</td><td>620</td><td>up</td><td></td></tr><tr><td>електропідстанція 10 кв</td><td>410</td><td>down</td><td></td></tr></tbody></table></div>
+    </section>
+
+    <section class="section">
+        <h2>🔮 Прогноз попиту (7/30/90 днів)</h2>
+        <div class="chart-container large">
+            <canvas id="chartForecast"></canvas>
+        </div>
+        <details>
+            <summary>Детальні дані прогнозу</summary>
+            <div class='tablewrap'><table><thead><tr><th>Продукт</th><th>7 днів</th><th>30 днів</th><th>90 днів</th></tr></thead><tbody><tr><td>інші завершальні будівельні роботи</td><td>1 342 904 ₴</td><td>1 373 783 ₴</td><td>1 534 648 ₴</td></tr><tr><td>тм-630</td><td>653 662 ₴</td><td>705 412 ₴</td><td>699 749 ₴</td></tr><tr><td>пакети програмного забезпечення для створення документів</td><td>133 893 ₴</td><td>136 972 ₴</td><td>153 011 ₴</td></tr><tr><td>електромонтажні роботи</td><td>109 045 ₴</td><td>111 552 ₴</td><td>124 614 ₴</td></tr><tr><td>прокат обладнання з оператором для виконання земляних робіт</td><td>108 260 ₴</td><td>110 749 ₴</td><td>123 718 ₴</td></tr><tr><td>знаряддя замки ключі петлі кріпильні деталі ланцюги та пружини</td><td>34 157 ₴</td><td>34 943 ₴</td><td>39 034 ₴</td></tr><tr><td>послуги з інженерного проектування</td><td>32 716 ₴</td><td>33 468 ₴</td><td>37 387 ₴</td></tr><tr><td>послуги пов язані з базами даних</td><td>26 192 ₴</td><td>26 794 ₴</td><td>29 931 ₴</td></tr></tbody></table></div>
+        </details>
+    </section>
+    </div>
+<div id="tab-fd" class="tab-content" style="display:none;">
+    <section class="section">
+        <h2>📊 Внутрішні метрики</h2>
+        <div class='tablewrap'><table><thead><tr><th>Показник</th><th>Значення</th><th>Одиниця</th></tr></thead><tbody><tr><td>Ревеню</td><td>8 400 ₴</td><td>₴</td></tr><tr><td>Обсяг пошуку</td><td>8 400</td><td></td></tr><tr><td>К-сть записів</td><td>2</td><td>шт</td></tr></tbody></table></div>
+    </section>
+
+    <section class="section">
+        <h2>🔍 Корективи бюджету (пошук)</h2>
+        <div class='tablewrap'><table><thead><tr><th>Запит</th><th>Обсяг</th><th>Тренд</th><th>Продукт</th></tr></thead><tbody><tr><td>трансформаторна підстанція</td><td>3 200</td><td>up</td><td>підстанція</td></tr><tr><td>трансформаторна підстанція</td><td>3 200</td><td>up</td><td>підстанція</td></tr><tr><td>купити трансформаторну підстанцію</td><td>1 500</td><td>up</td><td>трансформатор</td></tr><tr><td>трансформаторна підстанція купити</td><td>1 500</td><td>up</td><td>підстанція</td></tr><tr><td>ремонт трансформаторної підстанції</td><td>980</td><td>down</td><td>підстанції</td></tr><tr><td>ксо-290</td><td>980</td><td>stable</td><td>ксо-290</td></tr><tr><td>ксо-290</td><td>620</td><td>up</td><td>ксо-290</td></tr><tr><td>електропідстанція 10 кв</td><td>410</td><td>down</td><td>підстанція</td></tr></tbody></table></div>
+    </section>
+
+    <section class="section">
+        <h2>🗺️ Тендери по регіонах</h2>
+        <div class='tablewrap'><table><thead><tr><th>Регіон</th><th>Сума тендерів</th></tr></thead><tbody><tr><td>київська область</td><td>196 188 640 ₴</td></tr><tr><td>одеська область</td><td>14 343 063 ₴</td></tr><tr><td></td><td>11 393 890 ₴</td></tr><tr><td>харків</td><td>11 000 000 ₴</td></tr><tr><td>київ</td><td>4 760 000 ₴</td></tr><tr><td>хмельницька область</td><td>4 009 500 ₴</td></tr><tr><td>одеса</td><td>3 200 000 ₴</td></tr><tr><td>м київ</td><td>2 907 428 ₴</td></tr><tr><td>вінниця</td><td>1 800 000 ₴</td></tr><tr><td>львів</td><td>1 630 000 ₴</td></tr><tr><td>сумська область</td><td>1 318 933 ₴</td></tr><tr><td>івано-франківська область</td><td>1 236 116 ₴</td></tr><tr><td>дніпро</td><td>1 200 000 ₴</td></tr><tr><td>закарпатська область</td><td>1 172 591 ₴</td></tr><tr><td>львівська область</td><td>893 862 ₴</td></tr></tbody></table></div>
+    </section>
+    </div>
+<div id="tab-hr" class="tab-content" style="display:none;">
+    <section class="section">
+        <h2>👥 Дефіцит компетенцій / Вакансії</h2>
+        <div class='tablewrap'><table><thead><tr><th>Вакансія</th><th>Зарплата</th><th>Місто</th><th>Навички</th><th>Платформа</th></tr></thead><tbody><tr><td>Frontend Developer</td><td>50 000 ₴</td><td>удалено</td><td></td><td>dou.ua</td></tr><tr><td>Frontend Developer</td><td>50 000 ₴</td><td>удалено</td><td></td><td>dou.ua</td></tr><tr><td>Інженер-конструктор трансформаторних підстанцій</td><td>35 000 ₴</td><td>київ</td><td></td><td>work.ua</td></tr><tr><td>Технічний SEO / Data Analyst</td><td>35 000 ₴</td><td>львів</td><td></td><td>work.ua</td></tr><tr><td>SEO спеціаліст (B2B, промисловість)</td><td>28 000 ₴</td><td>київ</td><td></td><td>work.ua</td></tr><tr><td>Спеціаліст з маркетингових комунікацій</td><td>25 000 ₴</td><td>харків</td><td></td><td>work.ua</td></tr><tr><td>Контент менеджер (німецька)</td><td>20 000 ₴</td><td>remote</td><td></td><td>work.ua</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>0 ₴</td><td>kyiv</td><td></td><td>linkedin</td></tr><tr><td>Regional Sales Manager — Power Equipment</td><td>0 ₴</td><td>kyiv</td><td></td><td>linkedin</td></tr></tbody></table></div>
+    </section>
+
+    <section class="section">
+        <h2>📊 Розподіл зарплат</h2>
+        <div class="chart-container">
+            <canvas id="chartSalary"></canvas>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Потреби в персоналі</h2>
+        <p>На основі дефіциту компетенцій — основні напрямки найму на найближчі квартали.</p>
+        <ul>
+            <li><strong>Технічні фахівці:</strong> інженери, конструктори (зарплата 35-50К)</li>
+            <li><strong>IT/Маркетинг:</strong> SEO, Data Analyst, Frontend (35-50К)</li>
+            <li><strong>Продажі:</strong> Regional Sales Manager — Power Equipment</li>
+            <li><strong>Віддалена робота:</strong> доступна для контент/IT ролей</li>
+        </ul>
+    </section>
+    </div>
+
+<footer>for-AI · SEO Pipeline · Автоматизоване оновлення щодня о 08:00</footer>
+</div>
+
+<script>
+const chartData = {"tendersProducts": {"labels": ["ру", "мікроавтобуси", "капітальний ремонт і реставрація", "послуги зі страхування цивільної відповідальності власників автомобільного транспорту", "підстанції", "трдцн", "комплексні інженерні послуги", "лікарські засоби для лікування захворювань крові органів кровотворення та захворювань серцево-судинної системи", "інші завершальні будівельні роботи", "військові шоломи"], "values": [111647433, 64721666, 13541177, 10636008, 10100000, 8900000, 6423231, 4183920, 4131888, 4009500]}, "regions": {"labels": ["київська область", "одеська область", "харків", "невідомо", "київ", "хмельницька область", "одеса", "дніпро", "м київ", "львів"], "values": [196188640, 14343063, 11608089, 11407970, 4823000, 4009500, 3200000, 2949752, 2907428, 2289989]}, "funnel": {"labels": ["unknown", "middle", "top"], "values": [82, 2, 1]}, "forecast": {"products": ["інші завершальні будівельні роботи", "тм-630", "пакети програмного забезпечення для створення документів", "електромонтажні роботи", "прокат обладнання з оператором для виконання земляних робіт", "знаряддя замки ключі петлі кріпильні деталі ланцюги та пружини", "послуги з інженерного проектування", "послуги пов язані з базами даних"], "d7": [1342904.5935714284, 653662.2751968504, 133893.64904761905, 109045.05476190476, 108260.38476190476, 34157.67904761905, 32716.025476190476, 26192.02857142857], "d30": [1373783.2207142857, 705412.1159055118, 136972.3880952381, 111552.4261904762, 110749.71428571429, 34943.09785714286, 33468.29476190476, 26794.285714285714], "d90": [1534648.0458139535, 699749.942519685, 153011.3388372093, 124614.7941860465, 123718.08744186047, 39034.80209302325, 37387.30744186047, 29931.795348837208]}, "salary": {"до 20К": 3, "20-35К": 4, "35-50К": 2, "50-80К": 0, "80К+": 0}};
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display='none');
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+    // Resize charts when tab becomes visible
+    setTimeout(() => Chart.helpers.each(Chart.instances, c => c.resize()), 50);
+  });
+});
+
+// Chart.js defaults
+Chart.defaults.font.family = 'system-ui, -apple-system, Segoe UI, Roboto';
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = '#30363d';
+
+// 1. Тендери по продуктах
+if (chartData.tendersProducts?.labels?.length) {
+  new Chart(document.getElementById('chartTendersProducts'), {
+    type: 'bar',
+    data: {
+      labels: chartData.tendersProducts.labels,
+      datasets: [{
+        label: 'Бюджет (₴ млн)',
+        data: chartData.tendersProducts.values.map(v => v/1e6),
+        backgroundColor: 'rgba(88,166,255,0.7)',
+        borderColor: '#58a6ff',
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw + ' млн ₴' } } },
+      scales: { x: { beginAtZero: true, grid: { color: '#1e2836' } }, y: { grid: { display: false } } }
+    }
+  });
+}
+
+// 2. Регіони
+if (chartData.regions?.labels?.length) {
+  new Chart(document.getElementById('chartRegions'), {
+    type: 'doughnut',
+    data: {
+      labels: chartData.regions.labels,
+      datasets: [{
+        data: chartData.regions.values,
+        backgroundColor: ['#58a6ff','#a371f7','#3fb950','#f85149','#d29922','#39c5cf','#f78166','#a5d6ff','#ffa657','#ff7b72'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } }, tooltip: { callbacks: { label: ctx => ctx.label + ': ' + (ctx.raw/1e6).toFixed(1) + ' млн ₴' } } },
+      cutout: '60%'
+    }
+  });
+}
+
+// 3. Прогноз
+if (chartData.forecast?.products?.length) {
+  new Chart(document.getElementById('chartForecast'), {
+    type: 'bar',
+    data: {
+      labels: chartData.forecast.products,
+      datasets: [
+        { label: '7 днів', data: chartData.forecast.d7.map(v=>v/1e6), backgroundColor: 'rgba(88,166,255,0.7)', borderColor: '#58a6ff', borderWidth: 1, borderRadius: 4 },
+        { label: '30 днів', data: chartData.forecast.d30.map(v=>v/1e6), backgroundColor: 'rgba(163,113,247,0.7)', borderColor: '#a371f7', borderWidth: 1, borderRadius: 4 },
+        { label: '90 днів', data: chartData.forecast.d90.map(v=>v/1e6), backgroundColor: 'rgba(63,185,80,0.7)', borderColor: '#3fb950', borderWidth: 1, borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.toFixed(1) + ' млн ₴' } } },
+      scales: { x: { grid: { color: '#1e2836' } }, y: { beginAtZero: true, grid: { color: '#1e2836' }, title: { display: true, text: 'Обсяг (млн ₴)' } } }
+    }
+  });
+}
+
+// 4. Зарплатні смуги
+if (chartData.salary) {
+  new Chart(document.getElementById('chartSalary'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(chartData.salary),
+      datasets: [{
+        label: 'К-сть вакансій',
+        data: Object.values(chartData.salary),
+        backgroundColor: 'rgba(210,153,34,0.7)',
+        borderColor: '#d29922',
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, grid: { color: '#1e2836' } }, y: { grid: { display: false } } }
+    }
+  });
+}
+
+// Resize on window resize
+window.addEventListener('resize', () => Chart.helpers.each(Chart.instances, c => c.resize()));
+</script>
 </body>
 </html>
-    
